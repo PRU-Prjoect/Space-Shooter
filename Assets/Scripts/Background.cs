@@ -1,9 +1,12 @@
 using UnityEngine;
 
+[System.Serializable]
 public class Background : MonoBehaviour
 {
-    Vector3 MaxPoint;
-    Vector3 MinPoint;
+    [HideInInspector]
+    public Vector3 MaxPoint;
+    [HideInInspector]
+    public Vector3 MinPoint;
     void Start()
     {
         MaxPoint = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, Camera.main.pixelHeight, 0.0f));
