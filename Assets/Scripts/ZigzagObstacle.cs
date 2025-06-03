@@ -49,8 +49,15 @@ public class ZigzagObstacle : MonoBehaviour
         // Va chạm với đạn
         else if (other.CompareTag("Bullet"))
         {
-            TakeDamageFromBullet(1); // Mỗi viên đạn trừ 1 máu
-            Destroy(other.gameObject); // Hủy đạn
+            // Cộng điểm cao nhất cho obstacle khó nhất
+            ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
+            if (scoreManager != null)
+            {
+                scoreManager.AddScore(scoreManager.scorePerObstacle + 5);
+
+                TakeDamageFromBullet(1);
+                Destroy(other.gameObject);
+            }
         }
     }
 

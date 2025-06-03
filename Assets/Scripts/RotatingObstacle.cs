@@ -28,24 +28,24 @@ public class RotatingObstacle : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Va chạm với player
         if (other.CompareTag("Player"))
         {
-            PlayerBehaviour player = other.GetComponent<PlayerBehaviour>();
-            if (player != null)
-            {
-                player.TakeDamageFromObstacle(damageAmount);
-            }
-            Debug.Log("Player hit rotating obstacle! Damage: " + damageAmount);
-            // Obstacle vẫn tồn tại sau khi va chạm với player
+            // ... code player damage
         }
-        // Va chạm với đạn
         else if (other.CompareTag("Bullet"))
         {
-            TakeDamageFromBullet(1); // Mỗi viên đạn trừ 1 máu
-            Destroy(other.gameObject); // Hủy đạn
+            // Cộng điểm cao hơn cho obstacle khó
+            ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
+            if (scoreManager != null)
+            {
+                scoreManager.AddScore(scoreManager.scorePerObstacle + 2); // x2 điểm
+            }
+
+            TakeDamageFromBullet(1);
+            Destroy(other.gameObject);
         }
     }
+
 
     // Hàm trừ máu khi bị bắn
     public void TakeDamageFromBullet(int damage)

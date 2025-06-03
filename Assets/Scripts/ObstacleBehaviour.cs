@@ -25,7 +25,6 @@ public class ObstacleBehaviour : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Va chạm với player
         if (other.CompareTag("Player"))
         {
             PlayerBehaviour player = other.GetComponent<PlayerBehaviour>();
@@ -33,15 +32,21 @@ public class ObstacleBehaviour : MonoBehaviour
             {
                 player.TakeDamageFromObstacle(damageAmount);
             }
-            // Obstacle vẫn tồn tại sau khi va chạm với player
         }
-        // Va chạm với đạn
         else if (other.CompareTag("Bullet"))
         {
-            TakeDamageFromBullet(1); // Mỗi viên đạn trừ 1 máu
-            Destroy(other.gameObject); // Hủy đạn
+            // Cộng điểm khi bắn trúng obstacle
+            ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
+            if (scoreManager != null)
+            {
+                scoreManager.AddScore(scoreManager.scorePerObstacle);
+            }
+
+            TakeDamageFromBullet(1);
+            Destroy(other.gameObject);
         }
     }
+
 
     // Hàm trừ máu khi bị bắn
     public void TakeDamageFromBullet(int damage)
