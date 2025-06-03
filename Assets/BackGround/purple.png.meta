@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c145700958eb7de448a1225fe73070c5
+guid: 880f861f17ee50246b685f8a67521233
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6540657719654231131
-    second: playerShip2_orange_0
+      213: -2093324750932669864
+    second: purple_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: playerShip2_orange_0
+      name: purple_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 112
-        height: 75
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b5c2869ca8515ca50800000000000000
-      internalID: 6540657719654231131
+      spriteID: 85a002dda3403f2e0800000000000000
+      internalID: -2093324750932669864
       vertices: []
       indices: 
       edges: []
@@ -147,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      playerShip2_orange_0: 6540657719654231131
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
