@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 [System.Serializable]
 public class PlayerBehaviour : MonoBehaviour
@@ -24,21 +25,26 @@ public class PlayerBehaviour : MonoBehaviour
     private Background background;
 
     [Header("Shooting Settings")]
-    public float fireRate = 0.2f;
+    public float fireRate = 0.3f; // TĂNG TỪ 0.2f ĐỂ BẮN CHẬM HƠN
+    public Transform firePoint; // THÊM FIRE POINT
     private float nextFireTime = 0f;
+    private bool canFire = true;
 
     [Header("Shield System")]
     public bool hasShield = false;
     public GameObject shieldVisual;
 
     [Header("Ammo System")]
-    public int currentAmmo = 30;
-    public int maxAmmo = 50;
-    public bool infiniteAmmo = false; // THÊM OPTION INFINITE AMMO
+    public int currentAmmo = 100; // TĂNG TỪ 30 LÊN 100
+    public int maxAmmo = 100; // TĂNG TỪ 50 LÊN 100
+    public bool infiniteAmmo = false;
 
     [Header("Triple Shot System")]
     public bool hasTripleShot = false;
-    public float tripleShotDuration = 10f; // Hiệu ứng kéo dài 10 giây
+    public float tripleShotDuration = 10f;
+
+    [Header("Debug Settings")]
+    public bool enableDebugLogs = true;
 
     public Vector3 sizeOfSprite
     {
@@ -57,19 +63,36 @@ public class PlayerBehaviour : MonoBehaviour
         if (bulletPrefab == null)
         {
             bulletPrefab = Resources.Load<GameObject>("BulletPrefab");
+            if (bulletPrefab == null)
+            {
+                Debug.LogError("Bullet Prefab not found! Please assign it in Inspector or place in Resources folder.");
+            }
         }
 
-        // Tự động lấy boundary từ Background (nếu có)
+        // Tự động tạo fire point nếu chưa có
+        if (firePoint == null)
+        {
+            GameObject firePointObj = new GameObject("FirePoint");
+            firePointObj.transform.SetParent(transform);
+            firePointObj.transform.localPosition = Vector3.up * 0.8f; // TĂNG KHOẢNG CÁCH
+            firePoint = firePointObj.transform;
+            if (enableDebugLogs)
+                Debug.Log("Auto-created FirePoint");
+        }
+
+        // Tự động lấy boundary từ Background
         UpdateBoundaryFromBackground();
 
-        // Lấy HealthManager component (nếu có)
+        // Lấy HealthManager component
         healthManager = GetComponent<HealthManager>();
 
         // Khởi tạo health
         health = maxHealth;
 
-        // DEBUG INITIAL STATE
-        Debug.Log($"Player initialized - Ammo: {currentAmmo}/{maxAmmo}, Boundary: X({minX}, {maxX}), Y({minY}, {maxY})");
+        if (enableDebugLogs)
+        {
+            Debug.Log($"Player initialized - Ammo: {currentAmmo}/{maxAmmo}, Health: {health}/{maxHealth}");
+        }
     }
 
     void Update()
@@ -82,15 +105,21 @@ public class PlayerBehaviour : MonoBehaviour
             DebugPlayerInfo();
         }
 
-        // Xử lý bắn đạn tự động
-        if (Time.time >= nextFireTime)
+        // Xử lý bắn đạn
+        HandleShooting();
+
+        // Xử lý di chuyển
+        HandleMovement();
+    }
+
+    void HandleShooting()
+    {
+        // KIỂM TRA ĐIỀU KIỆN BẮN
+        if (Time.time >= nextFireTime && canFire)
         {
             Fire();
             nextFireTime = Time.time + fireRate;
         }
-
-        // Xử lý di chuyển
-        HandleMovement();
     }
 
     void UpdateBoundaryFromBackground()
@@ -102,7 +131,11 @@ public class PlayerBehaviour : MonoBehaviour
             maxX = background.MaxPoint.x;
             minY = background.MinPoint.y;
             maxY = background.MaxPoint.y;
-            Debug.Log($"Boundary updated from background: X({minX}, {maxX}), Y({minY}, {maxY})");
+
+            if (enableDebugLogs)
+            {
+                Debug.Log($"Boundary updated: X({minX}, {maxX}), Y({minY}, {maxY})");
+            }
         }
     }
 
@@ -134,27 +167,34 @@ public class PlayerBehaviour : MonoBehaviour
         currentPosition.x = Mathf.Clamp(currentPosition.x, minX, maxX);
         currentPosition.y = Mathf.Clamp(currentPosition.y, minY, maxY);
 
-        // Áp dụng vị trí đã được giới hạn
         transform.position = currentPosition;
     }
 
     void Fire()
     {
-        Debug.Log($"Fire attempt - Ammo: {currentAmmo}, Triple Shot: {hasTripleShot}, Background: {background?.currentIndex}");
+        if (enableDebugLogs)
+        {
+            Debug.Log($"Fire attempt - Ammo: {currentAmmo}/{maxAmmo}, Infinite: {infiniteAmmo}, Triple: {hasTripleShot}");
+        }
 
+        // KIỂM TRA BULLET PREFAB
         if (bulletPrefab == null)
         {
-            Debug.LogError("Bullet Prefab is null!");
+            Debug.LogError("Bullet Prefab is null! Cannot fire!");
             return;
         }
 
+        // KIỂM TRA AMMO (CHỈ KHI KHÔNG INFINITE)
         if (!infiniteAmmo && currentAmmo <= 0)
         {
-            Debug.LogWarning("No ammo left! Need ammo powerup.");
+            if (enableDebugLogs)
+            {
+                Debug.LogWarning("No ammo left! Collect ammo powerup.");
+            }
             return;
         }
 
-        // Kiểm tra có Triple Shot không
+        // BẮN ĐẠN
         if (hasTripleShot)
         {
             FireTripleBullets();
@@ -164,32 +204,50 @@ public class PlayerBehaviour : MonoBehaviour
             FireSingleBullet();
         }
 
-        // Trừ ammo
+        // TRỪ AMMO (CHỈ KHI KHÔNG INFINITE)
         if (!infiniteAmmo)
         {
             currentAmmo--;
-            Debug.Log($"Ammo remaining: {currentAmmo}");
+            if (enableDebugLogs)
+            {
+                Debug.Log($"Ammo remaining: {currentAmmo}");
+            }
+            UpdateAmmoUI();
         }
     }
 
     void FireSingleBullet()
     {
-        Vector3 spawnPosition = transform.position + Vector3.up * 0.5f;
+        // SỬ DỤNG FIRE POINT ĐỂ SPAWN CHÍNH XÁC
+        Vector3 spawnPosition = firePoint != null ? firePoint.position : transform.position + Vector3.up * 1.0f;
+
         GameObject bullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.identity);
 
         if (bullet != null)
         {
-            Debug.Log($"Single bullet spawned at {spawnPosition}");
+            // ĐẢM BẢO BULLET KHÔNG VA CHẠM VỚI PLAYER
+            Collider2D bulletCollider = bullet.GetComponent<Collider2D>();
+            Collider2D playerCollider = GetComponent<Collider2D>();
+
+            if (bulletCollider != null && playerCollider != null)
+            {
+                Physics2D.IgnoreCollision(bulletCollider, playerCollider);
+            }
+
+            if (enableDebugLogs)
+            {
+                Debug.Log($"Single bullet fired at {spawnPosition}");
+            }
         }
         else
         {
-            Debug.LogError("Failed to spawn single bullet!");
+            Debug.LogError("Failed to instantiate bullet!");
         }
     }
 
     void FireTripleBullets()
     {
-        Vector3 basePosition = transform.position + Vector3.up * 0.5f;
+        Vector3 basePosition = firePoint != null ? firePoint.position : transform.position + Vector3.up * 1.0f;
 
         // Đạn giữa (thẳng)
         GameObject centerBullet = Instantiate(bulletPrefab, basePosition, Quaternion.identity);
@@ -202,46 +260,49 @@ public class PlayerBehaviour : MonoBehaviour
         Vector3 rightPosition = basePosition + Vector3.right * 0.3f;
         GameObject rightBullet = Instantiate(bulletPrefab, rightPosition, Quaternion.Euler(0, 0, -15f));
 
-        if (centerBullet != null && leftBullet != null && rightBullet != null)
+        // IGNORE COLLISION VỚI PLAYER CHO TẤT CẢ ĐẠN
+        GameObject[] bullets = { centerBullet, leftBullet, rightBullet };
+        Collider2D playerCollider = GetComponent<Collider2D>();
+
+        foreach (GameObject bullet in bullets)
         {
-            Debug.Log($"Triple bullets spawned at {basePosition}");
+            if (bullet != null && playerCollider != null)
+            {
+                Collider2D bulletCollider = bullet.GetComponent<Collider2D>();
+                if (bulletCollider != null)
+                {
+                    Physics2D.IgnoreCollision(bulletCollider, playerCollider);
+                }
+            }
         }
-        else
+
+        if (enableDebugLogs)
         {
-            Debug.LogError("Failed to spawn some triple bullets!");
+            Debug.Log($"Triple bullets fired at {basePosition}");
         }
     }
 
-
-    // THÊM HÀM NÀY để reset ammo khi chuyển background
-    public void OnBackgroundChanged()
-    {
-        Debug.Log("Background changed - checking ammo");
-        if (currentAmmo <= 10) // Nếu ammo thấp, tự động refill
-        {
-            currentAmmo = maxAmmo;
-            Debug.Log("Ammo refilled due to background change");
-        }
-    }
-
-
-    // Hàm nhận damage
+    // HÀM NHẬN DAMAGE
     public void TakeDamageFromObstacle(int damage)
     {
         if (hasShield)
         {
             Debug.Log("Damage blocked by shield!");
-            return; // Shield chặn damage
+            return;
         }
 
-        // Ưu tiên dùng HealthManager nếu có
         if (healthManager != null)
         {
             healthManager.TakeDamage(damage);
+
+            // Kiểm tra nếu hết máu
+            if (healthManager.currentHealth <= 0)
+            {
+                GameOver();
+            }
         }
         else
         {
-            // Fallback: tự xử lý health
             health -= damage;
             if (health <= 0)
             {
@@ -277,11 +338,37 @@ public class PlayerBehaviour : MonoBehaviour
         Debug.Log("Shield deactivated!");
     }
 
+    // TRIPLE SHOT FUNCTIONS
+    public void ActivateTripleShot(float duration)
+    {
+        if (!hasTripleShot)
+        {
+            hasTripleShot = true;
+            StartCoroutine(TripleShotCoroutine(duration));
+            Debug.Log("Triple Shot activated!");
+        }
+    }
+
+    System.Collections.IEnumerator TripleShotCoroutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        hasTripleShot = false;
+        Debug.Log("Triple Shot deactivated!");
+    }
+
     // AMMO FUNCTIONS
     public void AddAmmo(int amount)
     {
         currentAmmo = Mathf.Min(currentAmmo + amount, maxAmmo);
         Debug.Log($"Ammo added! Current: {currentAmmo}/{maxAmmo}");
+        UpdateAmmoUI();
+    }
+
+    public void TripleAmmo()
+    {
+        int oldAmmo = currentAmmo;
+        currentAmmo = Mathf.Min(currentAmmo * 3, maxAmmo);
+        Debug.Log($"Ammo tripled! {oldAmmo} → {currentAmmo}");
         UpdateAmmoUI();
     }
 
@@ -298,36 +385,75 @@ public class PlayerBehaviour : MonoBehaviour
         Debug.Log($"Infinite ammo: {infiniteAmmo}");
     }
 
-    // UI UPDATE FUNCTIONS
-    void UpdateHealthUI()
+    // HÀM ĐƯỢC GỌI KHI CHUYỂN BACKGROUND
+    public void OnBackgroundChanged()
     {
-        Debug.Log($"Health: {health}/{maxHealth}");
-    }
+        UpdateBoundaryFromBackground();
 
-    void UpdateAmmoUI()
-    {
-        if (infiniteAmmo)
+        // REFILL AMMO KHI CHUYỂN BACKGROUND
+        if (currentAmmo <= maxAmmo / 2) // Nếu ammo dưới 50%
         {
-            Debug.Log("Ammo: ∞ (Infinite)");
-        }
-        else
-        {
-            Debug.Log($"Ammo: {currentAmmo}/{maxAmmo}");
+            AddAmmo(maxAmmo / 2); // Thêm 50% ammo
+            Debug.Log("Ammo refilled due to background change");
         }
     }
 
     void GameOver()
     {
-        Debug.Log("Game Over!");
-        // Thêm logic game over ở đây
+        Debug.Log("Player died! Game Over!");
+
+        // Lưu điểm cuối game
+        ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
+        if (scoreManager != null)
+        {
+            scoreManager.GameOver();
+        }
+
+        // Dừng game tạm thời
+        Time.timeScale = 0f;
+
+        // Chuyển đến End Scene sau 2 giây
+        Invoke(nameof(LoadEndScene), 2f);
     }
 
-    // Hàm hồi phục health
+    void LoadEndScene()
+    {
+        Time.timeScale = 1f; // Reset time scale
+
+        // Sử dụng EndGameCode thay vì SceneController
+        int finalScore = PlayerPrefs.GetInt("FinalScore", 0);
+        EndGameCode.TriggerGameOver(finalScore);
+    }
+
     public void RestoreHealth(int amount)
     {
         health = Mathf.Min(health + amount, maxHealth);
         UpdateHealthUI();
         Debug.Log($"Health restored! Current: {health}/{maxHealth}");
+    }
+
+    // UI UPDATE FUNCTIONS
+    void UpdateHealthUI()
+    {
+        if (enableDebugLogs)
+        {
+            Debug.Log($"Health: {health}/{maxHealth}");
+        }
+    }
+
+    void UpdateAmmoUI()
+    {
+        if (enableDebugLogs)
+        {
+            if (infiniteAmmo)
+            {
+                Debug.Log("Ammo: ∞ (Infinite)");
+            }
+            else
+            {
+                Debug.Log($"Ammo: {currentAmmo}/{maxAmmo}");
+            }
+        }
     }
 
     // DEBUG FUNCTION
@@ -338,35 +464,33 @@ public class PlayerBehaviour : MonoBehaviour
         Debug.Log($"Ammo: {currentAmmo}/{maxAmmo} (Infinite: {infiniteAmmo})");
         Debug.Log($"Health: {health}/{maxHealth}");
         Debug.Log($"Shield: {hasShield}");
+        Debug.Log($"Triple Shot: {hasTripleShot}");
         Debug.Log($"Boundary: X({minX}, {maxX}), Y({minY}, {maxY})");
+        Debug.Log($"Fire Rate: {fireRate}, Can Fire: {canFire}");
         Debug.Log($"Next fire time: {nextFireTime}, Current time: {Time.time}");
         Debug.Log($"Bullet prefab: {(bulletPrefab != null ? bulletPrefab.name : "NULL")}");
+        Debug.Log($"Fire Point: {(firePoint != null ? firePoint.position.ToString() : "NULL")}");
         Debug.Log("========================");
     }
-    // THÊM HÀM MỚI
-    public void TripleAmmo()
+
+    // UTILITY FUNCTIONS
+    public void SetCanFire(bool canFireValue)
     {
-        int oldAmmo = currentAmmo;
-        currentAmmo = Mathf.Min(currentAmmo * 3, maxAmmo);
-        Debug.Log($"Ammo tripled! {oldAmmo} → {currentAmmo}");
-        UpdateAmmoUI();
+        canFire = canFireValue;
+        Debug.Log($"Can fire set to: {canFire}");
     }
 
-    public void ActivateTripleShot(float duration)
+    public void ResetPlayer()
     {
-        hasTripleShot = true;
-        Debug.Log("Triple Shot activated!");
-
-        // Hủy coroutine cũ nếu có
-        StopCoroutine(nameof(TripleShotCoroutine));
-        StartCoroutine(TripleShotCoroutine(duration));
-    }
-
-    System.Collections.IEnumerator TripleShotCoroutine(float duration)
-    {
-        yield return new WaitForSeconds(duration);
+        health = maxHealth;
+        currentAmmo = maxAmmo;
+        hasShield = false;
         hasTripleShot = false;
-        Debug.Log("Triple Shot deactivated!");
-    }
+        canFire = true;
 
+        if (shieldVisual != null)
+            shieldVisual.SetActive(false);
+
+        Debug.Log("Player reset to initial state");
+    }
 }

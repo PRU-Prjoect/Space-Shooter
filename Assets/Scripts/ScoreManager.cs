@@ -12,13 +12,17 @@ public class ScoreManager : MonoBehaviour
     public int scorePerSecond = 1;
     public int bonusScore = 50;
 
-    [Header("Background Change")] // THÊM MỚI - không ảnh hưởng tính năng cũ
+    [Header("Background Change")]
     public int scoreToChangeBackground = 20;
     private int lastBackgroundChangeScore = 0;
 
     [Header("UI References")]
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI highScoreText;
+
+    [Header("Game Events")]
+    public static System.Action<int> OnScoreChanged; // Event cho score thay đổi
+    public static System.Action<int> OnHighScoreChanged; // Event cho high score mới
 
     private float timeCounter = 0f;
 
@@ -30,7 +34,6 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
     {
-        // GIỮ NGUYÊN - Tính điểm theo thời gian
         timeCounter += Time.deltaTime;
         if (timeCounter >= 1f)
         {
@@ -41,53 +44,55 @@ public class ScoreManager : MonoBehaviour
 
     public void AddScore(int points)
     {
-        // GIỮ NGUYÊN - Logic cộng điểm cũ
         currentScore += points;
         UpdateScoreUI();
 
-        // THÊM MỚI - Chỉ thêm kiểm tra chuyển background
+        // Trigger event khi score thay đổi
+        OnScoreChanged?.Invoke(currentScore);
+
         CheckBackgroundChange();
 
-        // GIỮ NGUYÊN - Kiểm tra high score
+        // Kiểm tra high score
         if (currentScore > highScore)
         {
+            int oldHighScore = highScore;
             highScore = currentScore;
             SaveHighScore();
+
+            // Trigger event khi có high score mới
+            OnHighScoreChanged?.Invoke(highScore);
+            Debug.Log($"NEW HIGH SCORE! {oldHighScore} → {highScore}");
         }
     }
 
     void UpdateScoreUI()
     {
-        // GIỮ NGUYÊN - Hiển thị UI như cũ
         if (scoreText != null)
-            scoreText.text = "Score: " + currentScore.ToString();
+            scoreText.text = $"Score: {currentScore:N0}"; // Format với dấu phẩy
 
         if (highScoreText != null)
-            highScoreText.text = "High Score: " + highScore.ToString();
+            highScoreText.text = $"Highest Score: {highScore:N0}"; // Đổi thành "Best" cho ngắn gọn
     }
 
     void SaveHighScore()
     {
-        // GIỮ NGUYÊN - Lưu high score
         PlayerPrefs.SetInt("HighScore", highScore);
         PlayerPrefs.Save();
     }
 
     void LoadHighScore()
     {
-        // GIỮ NGUYÊN - Load high score
         highScore = PlayerPrefs.GetInt("HighScore", 0);
     }
 
     public void ResetScore()
     {
-        // GIỮ NGUYÊN + THÊM MỚI
         currentScore = 0;
-        lastBackgroundChangeScore = 0; // Chỉ thêm dòng này
+        lastBackgroundChangeScore = 0;
         UpdateScoreUI();
+        OnScoreChanged?.Invoke(currentScore);
     }
 
-    // THÊM MỚI - Các hàm chuyển background
     void CheckBackgroundChange()
     {
         if (currentScore - lastBackgroundChangeScore >= scoreToChangeBackground)
@@ -105,7 +110,7 @@ public class ScoreManager : MonoBehaviour
             background.NextBackground();
             Debug.Log($"Background changed at score: {currentScore}");
 
-            // THÊM: Refill ammo khi chuyển background
+            // Refill ammo khi chuyển background
             PlayerBehaviour player = Object.FindFirstObjectByType<PlayerBehaviour>();
             if (player != null)
             {
@@ -114,4 +119,38 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
+    public void GameOver()
+    {
+        // Lưu điểm cuối game
+        PlayerPrefs.SetInt("FinalScore", currentScore);
+
+        // Cập nhật high score nếu cần
+        if (currentScore > highScore)
+        {
+            highScore = currentScore;
+            PlayerPrefs.SetInt("HighScore", highScore);
+            PlayerPrefs.Save();
+        }
+
+        Debug.Log($"Game Over! Final Score: {currentScore}, High Score: {highScore}");
+    }
+
+    // Hàm tiện ích để các script khác sử dụng
+    public int GetCurrentScore() => currentScore;
+    public int GetHighScore() => highScore;
+
+    // Hàm để set score (cho testing hoặc cheat)
+    public void SetScore(int score)
+    {
+        currentScore = score;
+        UpdateScoreUI();
+        OnScoreChanged?.Invoke(currentScore);
+    }
+
+    // Cleanup events khi destroy
+    void OnDestroy()
+    {
+        OnScoreChanged = null;
+        OnHighScoreChanged = null;
+    }
 }

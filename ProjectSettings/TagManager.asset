@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Obstacles
   - Bullet
+  - QuitButton
   layers:
   - Default
   - TransparentFX

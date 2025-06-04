@@ -211,8 +211,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 70
-  m_fontSizeBase: 70
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -148.27283, w: 0}
+  m_margin: {x: 0, y: 585.6825, z: -148.27283, w: -578.8722}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -358,8 +358,8 @@ Transform:
   m_GameObject: {fileID: 298310432}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.04, y: -0.02, z: 1}
-  m_LocalScale: {x: 5.664343, y: 10.083195, z: 1}
+  m_LocalPosition: {x: -0.262, y: 0, z: 0}
+  m_LocalScale: {x: 18.012115, y: 10.083195, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -797,8 +797,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -329, y: 842}
-  m_SizeDelta: {x: 244.0466, y: 50}
+  m_AnchoredPosition: {x: -363, y: 260.69977}
+  m_SizeDelta: {x: 244.0466, y: 34.6005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &831563539
 GameObject:
@@ -1159,7 +1159,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -107.212524, y: 0, z: -125.46149, w: -29.654541}
+  m_margin: {x: -107.212524, y: 520.6313, z: -125.46149, w: -29.654541}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1411,11 +1411,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 5763189723014111351, guid: 05c0de94bbf47844e9367fb28a1f2604, type: 3}
+  speed: 5
   minX: -8
   maxX: 8
   minY: -4
   maxY: 4
+  health: 100
+  maxHealth: 100
   fireRate: 0.2
+  hasShield: 0
+  shieldVisual: {fileID: 0}
+  currentAmmo: 30
+  maxAmmo: 50
+  infiniteAmmo: 0
+  hasTripleShot: 0
+  tripleShotDuration: 10
 --- !u!114 &2034311440
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,6 +14,6 @@ public class PlayButtonHandler : MonoBehaviour
     void OnPlayClicked()
     {
         Debug.Log("PlayButton press!");
-        SceneManager.LoadScene("GameScene"); // Đổi "GameScene" thành tên scene chơi của bạn
+        SceneManager.LoadScene("PlayScene"); // Đổi "GameScene" thành tên scene chơi của bạn
     }
 }

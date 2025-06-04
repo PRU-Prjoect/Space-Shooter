@@ -1,21 +1,28 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class InstructButtonHandler : MonoBehaviour
 {
-    public Button instructButton;            // Gắn nút Instruct
-    public GameObject instructionPanel;      // Gắn panel hướng dẫn
+    public Button instructButton;
+    public GameObject instructPanel; // Panel hiển thị hướng dẫn
 
-    void Start()
+    void Awake()
     {
-        instructButton.onClick.AddListener(ToggleInstruction);
-        instructionPanel.SetActive(false); // Ẩn panel ban đầu
+        //instructButton.onClick.AddListener(OnInstructClicked);
     }
 
-    void ToggleInstruction()
+    void OnInstructClicked()
     {
-        bool isActive = instructionPanel.activeSelf;
-        instructionPanel.SetActive(!isActive);
-        Debug.Log("Instruct clicked → " + (!isActive ? "Hiện" : "Ẩn") + " Instruct");
+        Debug.Log("Instruct button clicked!");
+
+        // Hiển thị panel hướng dẫn
+        if (instructPanel != null)
+        {
+            instructPanel.SetActive(true);
+        }
+
+        // Hoặc chuyển đến scene hướng dẫn riêng
+        // SceneManager.LoadScene("InstructScene");
     }
 }

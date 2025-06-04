@@ -177,7 +177,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Best Score:'
+  m_text: 'Highest Score: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0c2784d3f867d4444aeaf25e1d1c6f5e, type: 2}
   m_sharedMaterial: {fileID: -5031270068027234208, guid: 0c2784d3f867d4444aeaf25e1d1c6f5e, type: 2}
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -98.009094, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -269,6 +269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bestScoreText: {fileID: 0}
+  bestScore: 0
 --- !u!1 &228585283
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,7 +405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instructButton: {fileID: 0}
-  instructionPanel: {fileID: 0}
+  instructPanel: {fileID: 0}
 --- !u!1 &305774203
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,7 +1043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instructButton: {fileID: 228585285}
-  instructionPanel: {fileID: 0}
+  instructPanel: {fileID: 228585283}
 --- !u!1 &742705043
 GameObject:
   m_ObjectHideFlags: 0
@@ -1077,8 +1078,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0012898, y: 0}
-  m_SizeDelta: {x: 880.4, y: 405.8}
+  m_AnchoredPosition: {x: 0.00048828, y: 0.000011444}
+  m_SizeDelta: {x: 1114, y: 627}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &742705045
 MonoBehaviour:
@@ -1100,7 +1101,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -2093324750932669864, guid: 02d78f3a8a9040640b69f763b70c1150, type: 3}
+  m_Sprite: {fileID: -2093324750932669864, guid: 880f861f17ee50246b685f8a67521233, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1432,7 +1433,7 @@ GameObject:
   - component: {fileID: 1415110821}
   - component: {fileID: 1415110822}
   m_Layer: 0
-  m_Name: BestScoreManager
+  m_Name: StartSceneUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1462,10 +1463,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1415110820}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7c107a279a4c3141aa91ba4e741fa9a, type: 3}
+  m_Script: {fileID: 11500000, guid: 09cbd1df95c984d4990ed1516a3a605c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bestScoreText: {fileID: 0}
+  bestScoreText: {fileID: 100089096}
+  animationDuration: 1
 --- !u!1 &1598275676
 GameObject:
   m_ObjectHideFlags: 0
@@ -1834,7 +1836,7 @@ GameObject:
   - component: {fileID: 2133229558}
   m_Layer: 5
   m_Name: QuitButton
-  m_TagString: Untagged
+  m_TagString: QuitButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
