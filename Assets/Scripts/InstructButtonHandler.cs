@@ -5,24 +5,22 @@ using UnityEngine.SceneManagement;
 public class InstructButtonHandler : MonoBehaviour
 {
     public Button instructButton;
-    public GameObject instructPanel; // Panel hiển thị hướng dẫn
 
-    void Awake()
+    void Start()
     {
-        //instructButton.onClick.AddListener(OnInstructClicked);
+        if (instructButton != null)
+        {
+            instructButton.onClick.AddListener(OnInstructClicked);
+        }
+        else
+        {
+            Debug.LogError("Instruct Button not assigned!");
+        }
     }
 
     void OnInstructClicked()
     {
-        Debug.Log("Instruct button clicked!");
-
-        // Hiển thị panel hướng dẫn
-        if (instructPanel != null)
-        {
-            instructPanel.SetActive(true);
-        }
-
-        // Hoặc chuyển đến scene hướng dẫn riêng
-        // SceneManager.LoadScene("InstructScene");
+        Debug.Log("Instruct button clicked! Loading instruction scene...");
+        SceneManager.LoadScene("InstructScene");
     }
 }
