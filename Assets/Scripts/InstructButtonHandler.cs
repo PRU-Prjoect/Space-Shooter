@@ -2,6 +2,7 @@
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class InstructButtonHandler : MonoBehaviour
 {
@@ -13,9 +14,36 @@ public class InstructButtonHandler : MonoBehaviour
 
     void Start()
     {
+        SetupAudio(); // SỬA: Setup audio trước
+        SetupButton();
+    }
+
+    void SetupAudio()
+    {
+        // SỬA: Tự động tạo AudioSource nếu chưa có
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+        }
+
+        // SỬA: Cấu hình AudioSource đúng
+        audioSource.playOnAwake = false;
+        audioSource.volume = 1.0f;
+        audioSource.mute = false;
+
+        Debug.Log("Instruct Button AudioSource setup completed");
+    }
+
+    void SetupButton()
+    {
         if (instructButton != null)
         {
             instructButton.onClick.AddListener(OnInstructClicked);
+            Debug.Log("Instruct button connected successfully!");
         }
         else
         {
@@ -25,15 +53,48 @@ public class InstructButtonHandler : MonoBehaviour
 
     void OnInstructClicked()
     {
-        PlayButtonSound();
         Debug.Log("Instruct button clicked! Loading instruction scene...");
-        SceneManager.LoadScene("InstructScene");
+
+        // SỬA: Phát âm thanh và delay chuyển scene
+        PlayButtonSound();
+
+        // Delay để âm thanh kịp phát
+        StartCoroutine(LoadSceneWithDelay("InstructScene", 0.2f));
     }
+
     void PlayButtonSound()
     {
+        // SỬA: Thêm debug để kiểm tra
+        Debug.Log($"Playing instruct button sound. AudioSource: {audioSource != null}, Sound: {buttonClickSound != null}");
+
         if (buttonClickSound != null && audioSource != null)
         {
-            audioSource.PlayOneShot(buttonClickSound);
+            audioSource.PlayOneShot(buttonClickSound, 1.0f);
+            Debug.Log("Instruct button sound played!");
         }
+        else
+        {
+            if (buttonClickSound == null)
+                Debug.LogError("Button Click Sound is NULL! Please assign it in Inspector.");
+            if (audioSource == null)
+                Debug.LogError("AudioSource is NULL!");
+        }
+    }
+
+    // SỬA: Thêm coroutine để delay chuyển scene
+    IEnumerator LoadSceneWithDelay(string sceneName, float delay)
+    {
+        // Đợi âm thanh phát xong
+        yield return new WaitForSeconds(delay);
+
+        Debug.Log($"Loading scene: {sceneName}");
+        SceneManager.LoadScene(sceneName);
+    }
+
+    // SỬA: Thêm hàm test
+    [ContextMenu("Test Instruct Button Sound")]
+    void TestInstructButtonSound()
+    {
+        PlayButtonSound();
     }
 }
