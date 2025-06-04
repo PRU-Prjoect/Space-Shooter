@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class PlayerBehaviour : MonoBehaviour
@@ -172,25 +173,18 @@ public class PlayerBehaviour : MonoBehaviour
 
     void Fire()
     {
-        if (enableDebugLogs)
-        {
-            Debug.Log($"Fire attempt - Ammo: {currentAmmo}/{maxAmmo}, Infinite: {infiniteAmmo}, Triple: {hasTripleShot}");
-        }
+        Debug.Log($"Fire attempt - Ammo: {currentAmmo}, Infinite: {infiniteAmmo}");
 
-        // KIỂM TRA BULLET PREFAB
         if (bulletPrefab == null)
         {
-            Debug.LogError("Bullet Prefab is null! Cannot fire!");
+            Debug.LogError("Bullet Prefab is null!");
             return;
         }
 
-        // KIỂM TRA AMMO (CHỈ KHI KHÔNG INFINITE)
+        // KIỂM TRA AMMO - CHỈ KHI KHÔNG INFINITE
         if (!infiniteAmmo && currentAmmo <= 0)
         {
-            if (enableDebugLogs)
-            {
-                Debug.LogWarning("No ammo left! Collect ammo powerup.");
-            }
+            Debug.LogWarning("No ammo left!");
             return;
         }
 
@@ -204,28 +198,22 @@ public class PlayerBehaviour : MonoBehaviour
             FireSingleBullet();
         }
 
-        // TRỪ AMMO (CHỈ KHI KHÔNG INFINITE)
+        // TRỪ AMMO
         if (!infiniteAmmo)
         {
             currentAmmo--;
-            if (enableDebugLogs)
-            {
-                Debug.Log($"Ammo remaining: {currentAmmo}");
-            }
-            UpdateAmmoUI();
+            Debug.Log($"Ammo remaining: {currentAmmo}");
         }
     }
 
     void FireSingleBullet()
     {
-        // SỬ DỤNG FIRE POINT ĐỂ SPAWN CHÍNH XÁC
-        Vector3 spawnPosition = firePoint != null ? firePoint.position : transform.position + Vector3.up * 1.0f;
-
+        Vector3 spawnPosition = transform.position + Vector3.up * 1.0f; // TĂNG KHOẢNG CÁCH
         GameObject bullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.identity);
 
         if (bullet != null)
         {
-            // ĐẢM BẢO BULLET KHÔNG VA CHẠM VỚI PLAYER
+            // IGNORE COLLISION VỚI PLAYER
             Collider2D bulletCollider = bullet.GetComponent<Collider2D>();
             Collider2D playerCollider = GetComponent<Collider2D>();
 
@@ -234,20 +222,13 @@ public class PlayerBehaviour : MonoBehaviour
                 Physics2D.IgnoreCollision(bulletCollider, playerCollider);
             }
 
-            if (enableDebugLogs)
-            {
-                Debug.Log($"Single bullet fired at {spawnPosition}");
-            }
-        }
-        else
-        {
-            Debug.LogError("Failed to instantiate bullet!");
+            Debug.Log("Single bullet fired successfully");
         }
     }
 
     void FireTripleBullets()
     {
-        Vector3 basePosition = firePoint != null ? firePoint.position : transform.position + Vector3.up * 1.0f;
+        Vector3 basePosition = transform.position + Vector3.up * 1.0f;
 
         // Đạn giữa (thẳng)
         GameObject centerBullet = Instantiate(bulletPrefab, basePosition, Quaternion.identity);
@@ -260,7 +241,7 @@ public class PlayerBehaviour : MonoBehaviour
         Vector3 rightPosition = basePosition + Vector3.right * 0.3f;
         GameObject rightBullet = Instantiate(bulletPrefab, rightPosition, Quaternion.Euler(0, 0, -15f));
 
-        // IGNORE COLLISION VỚI PLAYER CHO TẤT CẢ ĐẠN
+        // IGNORE COLLISION CHO TẤT CẢ ĐẠN
         GameObject[] bullets = { centerBullet, leftBullet, rightBullet };
         Collider2D playerCollider = GetComponent<Collider2D>();
 
@@ -276,21 +257,21 @@ public class PlayerBehaviour : MonoBehaviour
             }
         }
 
-        if (enableDebugLogs)
-        {
-            Debug.Log($"Triple bullets fired at {basePosition}");
-        }
+        Debug.Log("Triple bullets fired successfully");
     }
+
 
     // HÀM NHẬN DAMAGE
     public void TakeDamageFromObstacle(int damage)
     {
+        // Kiểm tra shield trước
         if (hasShield)
         {
             Debug.Log("Damage blocked by shield!");
             return;
         }
 
+        // Xử lý damage
         if (healthManager != null)
         {
             healthManager.TakeDamage(damage);
@@ -298,7 +279,7 @@ public class PlayerBehaviour : MonoBehaviour
             // Kiểm tra nếu hết máu
             if (healthManager.currentHealth <= 0)
             {
-                GameOver();
+                GameOver(); // GỌI GAME OVER
             }
         }
         else
@@ -307,11 +288,11 @@ public class PlayerBehaviour : MonoBehaviour
             if (health <= 0)
             {
                 health = 0;
-                GameOver();
+                GameOver(); // GỌI GAME OVER
             }
-            UpdateHealthUI();
         }
     }
+
 
     // SHIELD FUNCTIONS
     public void ActivateShield(float duration)
@@ -406,9 +387,22 @@ public class PlayerBehaviour : MonoBehaviour
         ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
         int finalScore = scoreManager != null ? scoreManager.currentScore : 0;
 
-        // Trigger Game Over với điểm cuối
-        EndGameCode.TriggerGameOver(finalScore);
+        // Lưu điểm cuối game vào PlayerPrefs
+        PlayerPrefs.SetInt("FinalScore", finalScore);
+
+        // Kiểm tra và cập nhật high score
+        int currentHighScore = PlayerPrefs.GetInt("HighScore", 0);
+        if (finalScore > currentHighScore)
+        {
+            PlayerPrefs.SetInt("HighScore", finalScore);
+            Debug.Log($"New High Score: {finalScore}");
+        }
+        PlayerPrefs.Save();
+
+        // Chuyển đến End Scene
+        SceneManager.LoadScene("Endgame");
     }
+
 
 
     void LoadEndScene()
