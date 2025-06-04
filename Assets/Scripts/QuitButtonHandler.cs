@@ -5,6 +5,9 @@ public class QuitButtonHandler : MonoBehaviour
 {
     public Button quitButton;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip buttonClickSound;
     void Awake()
     {
         // Nếu chưa gán, tự động tìm
@@ -27,10 +30,18 @@ public class QuitButtonHandler : MonoBehaviour
     void OnQuitClicked()
     {
         Debug.Log("Quit button clicked!");
+        PlayButtonSound();
         Application.Quit();
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+    }
+    void PlayButtonSound()
+    {
+        if (buttonClickSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(buttonClickSound);
+        }
     }
 }

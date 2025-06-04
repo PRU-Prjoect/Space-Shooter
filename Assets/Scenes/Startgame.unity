@@ -403,6 +403,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instructButton: {fileID: 0}
+  audioSource: {fileID: 0}
+  buttonClickSound: {fileID: 0}
 --- !u!1 &305774203
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,8 +439,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.01004, y: 301.2}
-  m_SizeDelta: {x: 1420, y: 196.6}
+  m_AnchoredPosition: {x: 0.010002, y: 354}
+  m_SizeDelta: {x: 1920, y: 196.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &305774205
 MonoBehaviour:
@@ -662,6 +664,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 362278326}
   m_CullTransparentMesh: 1
+--- !u!1 &399740202
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 399740203}
+  - component: {fileID: 399740204}
+  m_Layer: 0
+  m_Name: MusicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &399740203
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399740202}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 541.33215, y: 331.56543, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &399740204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399740202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae9455813ef0f6040be0f5703e2b803a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicSource: {fileID: 0}
+  menuMusic: {fileID: 8300000, guid: 9113a8a90b5a5ca42a7d9af05d6cf620, type: 3}
+  gameMusic: {fileID: 8300000, guid: adaf7c0db5d9ccd41989ede5cb42efcd, type: 3}
+  musicVolume: 0.5
 --- !u!1 &461341539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1041,6 +1091,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instructButton: {fileID: 228585285}
+  audioSource: {fileID: 0}
+  buttonClickSound: {fileID: 8300000, guid: eb29844b03df258489a10c01c6e51552, type: 3}
 --- !u!114 &674662295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1054,6 +1106,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   instructButton: {fileID: 228585285}
+  audioSource: {fileID: 0}
+  buttonClickSound: {fileID: 0}
 --- !u!1 &742705043
 GameObject:
   m_ObjectHideFlags: 0
@@ -1088,8 +1142,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1420, y: 799}
+  m_AnchoredPosition: {x: -0.000061035, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &742705045
 MonoBehaviour:
@@ -1312,6 +1366,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   quitButton: {fileID: 2133229555}
+  audioSource: {fileID: 0}
+  buttonClickSound: {fileID: 8300000, guid: eb29844b03df258489a10c01c6e51552, type: 3}
 --- !u!1 &1018115919
 GameObject:
   m_ObjectHideFlags: 0
@@ -1417,6 +1473,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playButton: {fileID: 362278328}
+  audioSource: {fileID: 0}
+  buttonClickSound: {fileID: 8300000, guid: eb29844b03df258489a10c01c6e51552, type: 3}
 --- !u!4 &1300339116
 Transform:
   m_ObjectHideFlags: 0
@@ -1966,6 +2024,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   quitButton: {fileID: 0}
+  audioSource: {fileID: 0}
+  buttonClickSound: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1974,3 +2034,4 @@ SceneRoots:
   - {fileID: 619394802}
   - {fileID: 1854519469}
   - {fileID: 461341543}
+  - {fileID: 399740203}

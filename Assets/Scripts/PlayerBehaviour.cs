@@ -47,6 +47,10 @@ public class PlayerBehaviour : MonoBehaviour
     [Header("Debug Settings")]
     public bool enableDebugLogs = true;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip laserSound;
+
     public Vector3 sizeOfSprite
     {
         get
@@ -58,6 +62,7 @@ public class PlayerBehaviour : MonoBehaviour
 
     void Start()
     {
+        SetupAudio();
         keyboard = Keyboard.current;
 
         // Tự động tìm prefab nếu chưa gán
@@ -113,6 +118,18 @@ public class PlayerBehaviour : MonoBehaviour
         HandleMovement();
     }
 
+    void SetupAudio()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+        }
+        audioSource.playOnAwake = false;
+    }
     void HandleShooting()
     {
         // KIỂM TRA ĐIỀU KIỆN BẮN
@@ -173,6 +190,11 @@ public class PlayerBehaviour : MonoBehaviour
 
     void Fire()
     {
+        // PHÁT ÂM THANH LASER
+        if (laserSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(laserSound, 0.6f); // Volume 0.6
+        }
         Debug.Log($"Fire attempt - Ammo: {currentAmmo}, Infinite: {infiniteAmmo}");
 
         if (bulletPrefab == null)
@@ -204,6 +226,7 @@ public class PlayerBehaviour : MonoBehaviour
             currentAmmo--;
             Debug.Log($"Ammo remaining: {currentAmmo}");
         }
+
     }
 
     void FireSingleBullet()

@@ -4,16 +4,47 @@ using UnityEngine.SceneManagement;
 
 public class PlayButtonHandler : MonoBehaviour
 {
-    public Button playButton; // Gắn nút PLAY ở Inspector
+    [Header("UI References")]
+    public Button playButton;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip buttonClickSound;
 
     void Start()
     {
+        SetupAudio();
         playButton.onClick.AddListener(OnPlayClicked);
+    }
+
+    void SetupAudio()
+    {
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.playOnAwake = false;
     }
 
     void OnPlayClicked()
     {
-        Debug.Log("PlayButton press!");
-        SceneManager.LoadScene("PlayScene"); // Đổi "GameScene" thành tên scene chơi của bạn
+        PlayButtonSound();
+
+        // Chuyển sang game music
+        if (BackgroundMusicManager.Instance != null)
+        {
+            BackgroundMusicManager.Instance.PlayGameMusic();
+        }
+
+        Debug.Log("PlayButton pressed!");
+        SceneManager.LoadScene("PlayScene");
+    }
+
+    void PlayButtonSound()
+    {
+        if (buttonClickSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(buttonClickSound);
+        }
     }
 }

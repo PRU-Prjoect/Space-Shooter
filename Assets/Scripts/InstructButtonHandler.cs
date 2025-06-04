@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class InstructButtonHandler : MonoBehaviour
 {
     public Button instructButton;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip buttonClickSound;
 
     void Start()
     {
@@ -20,7 +25,15 @@ public class InstructButtonHandler : MonoBehaviour
 
     void OnInstructClicked()
     {
+        PlayButtonSound();
         Debug.Log("Instruct button clicked! Loading instruction scene...");
         SceneManager.LoadScene("InstructScene");
+    }
+    void PlayButtonSound()
+    {
+        if (buttonClickSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(buttonClickSound);
+        }
     }
 }

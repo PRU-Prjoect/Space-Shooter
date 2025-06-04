@@ -12,6 +12,12 @@ public class BackgroundMusicManager : MonoBehaviour
 
     public static BackgroundMusicManager Instance;
 
+    // Thêm vào BackgroundMusicManager
+    void Start()
+    {
+        PlayMenuMusic();
+    }
+
     void Awake()
     {
         // Singleton pattern để giữ music qua scenes
