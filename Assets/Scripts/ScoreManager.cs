@@ -104,6 +104,14 @@ public class ScoreManager : MonoBehaviour
         {
             background.NextBackground();
             Debug.Log($"Background changed at score: {currentScore}");
+
+            // THÊM: Refill ammo khi chuyển background
+            PlayerBehaviour player = Object.FindFirstObjectByType<PlayerBehaviour>();
+            if (player != null)
+            {
+                player.OnBackgroundChanged();
+            }
         }
     }
+
 }

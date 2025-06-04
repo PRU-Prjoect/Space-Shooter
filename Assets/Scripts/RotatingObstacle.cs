@@ -30,7 +30,16 @@ public class RotatingObstacle : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // ... code player damage
+            // THÊM CODE XỬ LÝ VA CHẠM VỚI PLAYER
+            PlayerBehaviour player = other.GetComponent<PlayerBehaviour>();
+            if (player != null)
+            {
+                player.TakeDamageFromObstacle(damageAmount);
+                Debug.Log($"Player hit by Rotating Obstacle! Damage: {damageAmount}");
+            }
+
+            // Tự hủy sau khi va chạm với player
+            Destroy(gameObject);
         }
         else if (other.CompareTag("Bullet"))
         {
@@ -38,14 +47,13 @@ public class RotatingObstacle : MonoBehaviour
             ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
             if (scoreManager != null)
             {
-                scoreManager.AddScore(scoreManager.scorePerObstacle + 2); // x2 điểm
+                scoreManager.AddScore(scoreManager.scorePerObstacle * 2); // x2 điểm
             }
 
             TakeDamageFromBullet(1);
             Destroy(other.gameObject);
         }
     }
-
 
     // Hàm trừ máu khi bị bắn
     public void TakeDamageFromBullet(int damage)
