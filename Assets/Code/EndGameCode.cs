@@ -78,29 +78,50 @@ public class EndGameCode : MonoBehaviour
         int highScore = PlayerPrefs.GetInt("HighScore", 0);
         int previousHighScore = PlayerPrefs.GetInt("PreviousHighScore", 0);
 
+        Debug.Log($"Displaying scores - Final: {finalScore}, High: {highScore}, Previous: {previousHighScore}");
+
         // Hiển thị điểm cuối game
         if (ScoreEndGame != null)
         {
-            ScoreEndGame.text = $"Final Score: {finalScore:N0}";
+            ScoreEndGame.text = $"Final Score: {FormatScore(finalScore)}";
         }
 
-        // Hiển thị high score
+        // Hiển thị high score với logic cải tiến
         if (HighScoreText != null)
         {
             if (finalScore > previousHighScore && finalScore == highScore)
             {
-                HighScoreText.text = $"NEW HIGH SCORE!\n{highScore:N0}";
+                // NEW HIGH SCORE!
+                HighScoreText.text = $"🏆 NEW HIGH SCORE! 🏆\n{FormatScore(highScore)}";
                 HighScoreText.color = Color.yellow;
+
+                // Thêm hiệu ứng nhấp nháy
+                StartCoroutine(BlinkText(HighScoreText));
             }
             else
             {
-                HighScoreText.text = $"High Score: {highScore:N0}";
+                // High score bình thường
+                HighScoreText.text = $"Highest Score: {FormatScore(highScore)}";
                 HighScoreText.color = Color.white;
             }
         }
 
         Debug.Log($"End Game - Final Score: {finalScore}, High Score: {highScore}");
     }
+
+    // Hiệu ứng nhấp nháy cho NEW HIGH SCORE
+    System.Collections.IEnumerator BlinkText(TextMeshProUGUI text)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            text.color = Color.yellow;
+            yield return new WaitForSeconds(0.3f);
+            text.color = Color.red;
+            yield return new WaitForSeconds(0.3f);
+        }
+        text.color = Color.yellow; // Kết thúc bằng màu vàng
+    }
+
 
     void PlayButtonSound()
     {
@@ -129,8 +150,9 @@ public class EndGameCode : MonoBehaviour
         PlayerPrefs.Save();
 
         // Chuyển đến End Scene
-        SceneManager.LoadScene("EndScene");
+        SceneManager.LoadScene("Endgame");
     }
+
 
     // Hàm tiện ích để format số
     private string FormatScore(int score)

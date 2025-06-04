@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class PlayerBehaviour : MonoBehaviour
@@ -402,19 +403,30 @@ public class PlayerBehaviour : MonoBehaviour
     {
         Debug.Log("Player died! Game Over!");
 
-        // Lưu điểm cuối game
+        // Lấy điểm cuối từ ScoreManager
         ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
-        if (scoreManager != null)
+        int finalScore = scoreManager != null ? scoreManager.currentScore : 0;
+
+        // LƯU SCORE TRƯỚC KHI CHUYỂN SCENE
+        PlayerPrefs.SetInt("FinalScore", finalScore);
+
+        // Kiểm tra và cập nhật high score
+        int currentHighScore = PlayerPrefs.GetInt("HighScore", 0);
+        if (finalScore > currentHighScore)
         {
-            scoreManager.GameOver();
+            PlayerPrefs.SetInt("HighScore", finalScore);
+            Debug.Log($"New High Score: {finalScore}");
         }
+        PlayerPrefs.Save();
 
-        // Dừng game tạm thời
-        Time.timeScale = 0f;
+        // KHÔNG DỪNG TIME SCALE Ở ĐÂY
+        // Time.timeScale = 0f; // XÓA DÒNG NÀY
 
-        // Chuyển đến End Scene sau 2 giây
-        Invoke(nameof(LoadEndScene), 2f);
+        // Chuyển đến End Scene
+        SceneManager.LoadScene("Endgame");
     }
+
+
 
     void LoadEndScene()
     {
