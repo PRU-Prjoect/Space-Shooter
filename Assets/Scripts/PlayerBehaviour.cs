@@ -402,19 +402,14 @@ public class PlayerBehaviour : MonoBehaviour
     {
         Debug.Log("Player died! Game Over!");
 
-        // Lưu điểm cuối game
+        // Lấy điểm cuối từ ScoreManager
         ScoreManager scoreManager = Object.FindFirstObjectByType<ScoreManager>();
-        if (scoreManager != null)
-        {
-            scoreManager.GameOver();
-        }
+        int finalScore = scoreManager != null ? scoreManager.currentScore : 0;
 
-        // Dừng game tạm thời
-        Time.timeScale = 0f;
-
-        // Chuyển đến End Scene sau 2 giây
-        Invoke(nameof(LoadEndScene), 2f);
+        // Trigger Game Over với điểm cuối
+        EndGameCode.TriggerGameOver(finalScore);
     }
+
 
     void LoadEndScene()
     {

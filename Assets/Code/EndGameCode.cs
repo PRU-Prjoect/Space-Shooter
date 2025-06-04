@@ -16,9 +16,6 @@ public class EndGameCode : MonoBehaviour
     [SerializeField] private string mainMenuSceneName = "Startgame";
     [SerializeField] private string gameSceneName = "PlayScene";
 
-    [Header("Audio")]
-    [SerializeField] private AudioSource buttonClickSound;
-
     private void Awake()
     {
         SetupButtons();
@@ -27,47 +24,31 @@ public class EndGameCode : MonoBehaviour
 
     private void Start()
     {
-        // Đảm bảo time scale về bình thường
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; // Đảm bảo time scale về bình thường
     }
 
     void SetupButtons()
     {
         if (MainMenuButton != null)
         {
-            MainMenuButton.onClick.AddListener(() =>
-            {
-                PlayButtonSound();
-                ReturnToMainMenu();
-            });
+            MainMenuButton.onClick.AddListener(ReturnToMainMenu);
         }
 
         if (PlayAgainButton != null)
         {
-            PlayAgainButton.onClick.AddListener(() =>
-            {
-                PlayButtonSound();
-                RetryGame();
-            });
+            PlayAgainButton.onClick.AddListener(RetryGame);
         }
     }
 
     public void RetryGame()
     {
         Debug.Log("Restarting game...");
-
-        // Reset PlayerPrefs nếu cần
-        PlayerPrefs.SetInt("CurrentScore", 0);
-
-        // Load game scene
         SceneManager.LoadScene(gameSceneName);
     }
 
     public void ReturnToMainMenu()
     {
         Debug.Log("Returning to main menu...");
-
-        // Load main menu scene
         SceneManager.LoadScene(mainMenuSceneName);
     }
 
@@ -76,7 +57,6 @@ public class EndGameCode : MonoBehaviour
         // Lấy điểm từ PlayerPrefs
         int finalScore = PlayerPrefs.GetInt("FinalScore", 0);
         int highScore = PlayerPrefs.GetInt("HighScore", 0);
-        int previousHighScore = PlayerPrefs.GetInt("PreviousHighScore", 0);
 
         // Hiển thị điểm cuối game
         if (ScoreEndGame != null)
@@ -87,27 +67,19 @@ public class EndGameCode : MonoBehaviour
         // Hiển thị high score
         if (HighScoreText != null)
         {
-            if (finalScore > previousHighScore && finalScore == highScore)
+            if (finalScore >= highScore && finalScore > 0)
             {
                 HighScoreText.text = $"NEW HIGH SCORE!\n{highScore:N0}";
                 HighScoreText.color = Color.yellow;
             }
             else
             {
-                HighScoreText.text = $"High Score: {highScore:N0}";
+                HighScoreText.text = $"Highest Score: {highScore:N0}";
                 HighScoreText.color = Color.white;
             }
         }
 
         Debug.Log($"End Game - Final Score: {finalScore}, High Score: {highScore}");
-    }
-
-    void PlayButtonSound()
-    {
-        if (buttonClickSound != null)
-        {
-            buttonClickSound.Play();
-        }
     }
 
     // Hàm để các script khác gọi khi game over
@@ -118,8 +90,6 @@ public class EndGameCode : MonoBehaviour
 
         // Kiểm tra và cập nhật high score
         int currentHighScore = PlayerPrefs.GetInt("HighScore", 0);
-        PlayerPrefs.SetInt("PreviousHighScore", currentHighScore);
-
         if (finalScore > currentHighScore)
         {
             PlayerPrefs.SetInt("HighScore", finalScore);
@@ -130,34 +100,5 @@ public class EndGameCode : MonoBehaviour
 
         // Chuyển đến End Scene
         SceneManager.LoadScene("EndScene");
-    }
-
-    // Hàm tiện ích để format số
-    private string FormatScore(int score)
-    {
-        if (score >= 1000000)
-            return (score / 1000000f).ToString("F1") + "M";
-        else if (score >= 1000)
-            return (score / 1000f).ToString("F1") + "K";
-        else
-            return score.ToString();
-    }
-
-    // Hàm để restart với hiệu ứng fade (optional)
-    public void RetryGameWithFade()
-    {
-        StartCoroutine(FadeAndLoadScene(gameSceneName));
-    }
-
-    public void ReturnToMainMenuWithFade()
-    {
-        StartCoroutine(FadeAndLoadScene(mainMenuSceneName));
-    }
-
-    private System.Collections.IEnumerator FadeAndLoadScene(string sceneName)
-    {
-        // Thêm hiệu ứng fade nếu có
-        yield return new WaitForSeconds(0.5f);
-        SceneManager.LoadScene(sceneName);
     }
 }
