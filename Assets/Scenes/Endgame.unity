@@ -762,6 +762,9 @@ MonoBehaviour:
   HighScoreText: {fileID: 316404716}
   mainMenuSceneName: Startgame
   gameSceneName: PlayScene
+  audioSource: {fileID: 0}
+  buttonClickSound: {fileID: 8300000, guid: eb29844b03df258489a10c01c6e51552, type: 3}
+  gameOverMusic: {fileID: 8300000, guid: 9113a8a90b5a5ca42a7d9af05d6cf620, type: 3}
 --- !u!4 &317440879
 Transform:
   m_ObjectHideFlags: 0
@@ -1719,6 +1722,9 @@ MonoBehaviour:
   HighScoreText: {fileID: 0}
   mainMenuSceneName: Startgame
   gameSceneName: PlayScene
+  audioSource: {fileID: 0}
+  buttonClickSound: {fileID: 0}
+  gameOverMusic: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
