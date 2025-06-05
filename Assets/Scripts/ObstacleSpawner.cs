@@ -12,6 +12,12 @@ public class ObstacleSpawner : MonoBehaviour
     public bool increaseDifficulty = true;
     public float difficultyIncreaseRate = 0.01f;
 
+    [Header("Speed Increase System")]
+    public float baseObstacleSpeed = 5f; // Tốc độ cơ bản của obstacles
+    public float speedIncreaseRate = 2f; // Tăng tốc độ theo thời gian
+    public float maxObstacleSpeed = 40f; // Tốc độ tối đa
+    public float speedIncreaseInterval = 2f; // Tăng tốc mỗi 10 giây
+
     [Header("Background Integration")]
     public bool useBackgroundBounds = true; // Toggle để bật/tắt
     public float marginFromEdge = 1.0f; // Margin từ biên background
@@ -22,8 +28,17 @@ public class ObstacleSpawner : MonoBehaviour
     private Background background;
     private float nextSpawnTime = 0f;
 
+    // THÊM: Biến cho hệ thống tăng tốc
+    private float currentObstacleSpeed;
+    private float gameStartTime;
+    private float speedTimer = 0f;
+
     void Start()
     {
+        // THÊM: Khởi tạo hệ thống tốc độ
+        currentObstacleSpeed = baseObstacleSpeed;
+        gameStartTime = Time.time;
+
         // Tìm Background component nếu được bật
         if (useBackgroundBounds)
         {
@@ -56,6 +71,9 @@ public class ObstacleSpawner : MonoBehaviour
 
     void Update()
     {
+        // THÊM: Cập nhật tốc độ obstacles theo thời gian
+        UpdateObstacleSpeed();
+
         if (Time.time >= nextSpawnTime)
         {
             SpawnRandomObstacle();
@@ -68,6 +86,48 @@ public class ObstacleSpawner : MonoBehaviour
             }
 
             nextSpawnTime = Time.time + currentSpawnRate;
+        }
+    }
+
+    // THÊM: Hàm cập nhật tốc độ obstacles
+    void UpdateObstacleSpeed()
+    {
+        speedTimer += Time.deltaTime;
+
+        if (speedTimer >= speedIncreaseInterval)
+        {
+            speedTimer = 0f;
+            IncreaseObstacleSpeed();
+        }
+
+        // Cập nhật tốc độ cho tất cả obstacles hiện tại
+        ApplySpeedToExistingObstacles();
+    }
+
+    // THÊM: Tăng tốc độ obstacles
+    void IncreaseObstacleSpeed()
+    {
+        if (currentObstacleSpeed < maxObstacleSpeed)
+        {
+            float oldSpeed = currentObstacleSpeed;
+            currentObstacleSpeed += speedIncreaseRate;
+            currentObstacleSpeed = Mathf.Min(currentObstacleSpeed, maxObstacleSpeed);
+
+            Debug.Log($"Obstacle speed increased from {oldSpeed:F2} to {currentObstacleSpeed:F2}");
+        }
+    }
+
+    // THÊM: Áp dụng tốc độ cho obstacles hiện tại
+    void ApplySpeedToExistingObstacles()
+    {
+        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacles");
+        foreach (GameObject obstacle in obstacles)
+        {
+            ObstacleBehaviour obstacleBehaviour = obstacle.GetComponent<ObstacleBehaviour>();
+            if (obstacleBehaviour != null)
+            {
+                obstacleBehaviour.SetSpeed(currentObstacleSpeed);
+            }
         }
     }
 
@@ -84,9 +144,16 @@ public class ObstacleSpawner : MonoBehaviour
         Vector3 spawnPosition = new Vector3(randomX, spawnY, 0f);
 
         // Spawn obstacle
-        Instantiate(selectedObstacle, spawnPosition, selectedObstacle.transform.rotation);
+        GameObject spawnedObstacle = Instantiate(selectedObstacle, spawnPosition, selectedObstacle.transform.rotation);
 
-        Debug.Log("Spawned: " + selectedObstacle.name + " at X: " + randomX);
+        // THÊM: Set tốc độ cho obstacle mới spawn
+        ObstacleBehaviour obstacleBehaviour = spawnedObstacle.GetComponent<ObstacleBehaviour>();
+        if (obstacleBehaviour != null)
+        {
+            obstacleBehaviour.SetSpeed(currentObstacleSpeed);
+        }
+
+        Debug.Log($"Spawned: {selectedObstacle.name} at X: {randomX} with speed: {currentObstacleSpeed:F2}");
     }
 
     // Method để cập nhật spawn range trong runtime (tùy chọn)
@@ -101,6 +168,30 @@ public class ObstacleSpawner : MonoBehaviour
         {
             minSpawnX = -spawnRangeX;
             maxSpawnX = spawnRangeX;
+        }
+    }
+
+    // THÊM: Getter cho tốc độ hiện tại
+    public float GetCurrentObstacleSpeed()
+    {
+        return currentObstacleSpeed;
+    }
+
+    // THÊM: Reset tốc độ (cho restart game)
+    public void ResetSpeed()
+    {
+        currentObstacleSpeed = baseObstacleSpeed;
+        speedTimer = 0f;
+        gameStartTime = Time.time;
+    }
+
+    // THÊM: Debug info
+    void OnGUI()
+    {
+        if (Application.isEditor)
+        {
+            GUI.Label(new Rect(10, 100, 200, 20), $"Obstacle Speed: {currentObstacleSpeed:F2}");
+            GUI.Label(new Rect(10, 120, 200, 20), $"Max Speed: {maxObstacleSpeed:F2}");
         }
     }
 }

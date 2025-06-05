@@ -26,18 +26,19 @@ public class BulletBehaviour : MonoBehaviour
         background = Object.FindFirstObjectByType<Background>();
         if (background != null)
         {
-            limitY = background.MaxPoint.y + 2f; // Thêm buffer 2 units
-            limitX = background.MaxPoint.x + 2f;
-            minY = background.MinPoint.y - 2f;
-            minX = background.MinPoint.x - 2f;
+            // SỬA: Giảm buffer để giới hạn chặt hơn trong background
+            limitY = background.MaxPoint.y - 0.5f; // Giảm từ +2f xuống -0.5f
+            limitX = background.MaxPoint.x - 0.5f; // Giảm từ +2f xuống -0.5f
+            minY = background.MinPoint.y + 0.5f;   // Tăng từ -2f lên +0.5f
+            minX = background.MinPoint.x + 0.5f;   // Tăng từ -2f lên +0.5f
         }
         else
         {
             // Fallback nếu không tìm thấy background
-            limitY = 15f;
-            limitX = 15f;
-            minY = -15f;
-            minX = -15f;
+            limitY = 10f;  // Giảm từ 15f
+            limitX = 8f;   // Giảm từ 15f
+            minY = -4f;    // Tăng từ -15f
+            minX = -8f;    // Tăng từ -15f
         }
 
         // Tính hướng bay dựa trên rotation
@@ -49,7 +50,7 @@ public class BulletBehaviour : MonoBehaviour
             direction = Vector3.up;
         }
 
-        Debug.Log($"Bullet boundary: X({minX}, {limitX}), Y({minY}, {limitY})");
+        Debug.Log($"Bullet boundary (tightened): X({minX}, {limitX}), Y({minY}, {limitY})");
     }
 
     void Update()
@@ -57,19 +58,25 @@ public class BulletBehaviour : MonoBehaviour
         // Bay theo hướng đã tính
         transform.position += direction * speed * Time.deltaTime;
 
-        // Kiểm tra giới hạn background
-        if (transform.position.y >= limitY ||
-            transform.position.x >= limitX ||
-            transform.position.x <= minX ||
-            transform.position.y <= minY)
+        // SỬA: Kiểm tra giới hạn background chặt chẽ hơn
+        Vector3 pos = transform.position;
+        if (pos.y >= limitY || pos.x >= limitX ||
+            pos.x <= minX || pos.y <= minY)
         {
-            Debug.Log("Bullet destroyed at background boundary");
+            Debug.Log($"Bullet destroyed at background boundary - Position: {pos}");
             Destroy(gameObject);
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // SỬA: Thêm kiểm tra Player để tránh va chạm
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Bullet ignored collision with Player");
+            return; // Bỏ qua va chạm với Player
+        }
+
         if (other.CompareTag("Obstacles"))
         {
             Debug.Log("Bullet hit obstacle!");
@@ -81,6 +88,18 @@ public class BulletBehaviour : MonoBehaviour
             }
 
             Destroy(gameObject);
+        }
+    }
+
+    // THÊM: Hàm để vẽ boundary trong Scene view (debug)
+    void OnDrawGizmos()
+    {
+        if (background != null)
+        {
+            Gizmos.color = Color.red;
+            Vector3 center = new Vector3((minX + limitX) / 2, (minY + limitY) / 2, 0);
+            Vector3 size = new Vector3(limitX - minX, limitY - minY, 0);
+            Gizmos.DrawWireCube(center, size);
         }
     }
 }
