@@ -95,7 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerUpType: 1
   shieldDuration: 0
-  ammoAmount: 10
+  ammoAmount: 20
   rotateSpeed: 50
 --- !u!212 &8726786056708079383
 SpriteRenderer:

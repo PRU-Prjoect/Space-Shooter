@@ -20,24 +20,22 @@ public class EndGameCode : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip buttonClickSound;
-    [SerializeField] private AudioClip gameOverMusic;
 
     private void Awake()
     {
-        SetupAudio(); // SỬA: Setup audio trước
+        SetupAudio(); // THÊM: Setup audio
         SetupButtons();
         DisplayScores();
     }
 
     private void Start()
     {
-        Time.timeScale = 1f; // Đảm bảo time scale về bình thường
-        PlayGameOverMusic(); // SỬA: Phát nhạc game over
+        Time.timeScale = 1f;
     }
 
     void SetupAudio()
     {
-        // SỬA: Tự động tạo AudioSource nếu chưa có
+        // THÊM: Tự động tạo AudioSource nếu chưa có
         if (audioSource == null)
         {
             audioSource = GetComponent<AudioSource>();
@@ -47,7 +45,6 @@ public class EndGameCode : MonoBehaviour
             }
         }
 
-        // SỬA: Cấu hình AudioSource đúng
         audioSource.playOnAwake = false;
         audioSource.volume = 1.0f;
         audioSource.mute = false;
@@ -55,98 +52,46 @@ public class EndGameCode : MonoBehaviour
         Debug.Log("EndGame AudioSource setup completed");
     }
 
-    void PlayGameOverMusic()
-    {
-        // SỬA: Phát nhạc game over hoặc dừng music
-        if (BackgroundMusicManager.Instance != null)
-        {
-            if (gameOverMusic != null)
-            {
-                BackgroundMusicManager.Instance.musicSource.clip = gameOverMusic;
-                BackgroundMusicManager.Instance.musicSource.Play();
-                Debug.Log("Game Over music started");
-            }
-            else
-            {
-                BackgroundMusicManager.Instance.StopMusic();
-                Debug.Log("Background music stopped for game over");
-            }
-        }
-    }
-
     void SetupButtons()
     {
         if (MainMenuButton != null)
         {
             MainMenuButton.onClick.AddListener(ReturnToMainMenu);
-            Debug.Log("Main Menu button connected");
         }
 
         if (PlayAgainButton != null)
         {
             PlayAgainButton.onClick.AddListener(RetryGame);
-            Debug.Log("Play Again button connected");
         }
     }
 
     public void RetryGame()
     {
         Debug.Log("Restarting game...");
-
-        // SỬA: Phát âm thanh và delay chuyển scene
-        PlayButtonSound();
-
-        // Chuyển về game music
-        if (BackgroundMusicManager.Instance != null)
-        {
-            BackgroundMusicManager.Instance.PlayGameMusic();
-        }
-
+        PlayButtonSound(); // THÊM: Phát âm thanh
         StartCoroutine(LoadSceneWithDelay(gameSceneName, 0.2f));
     }
 
     public void ReturnToMainMenu()
     {
         Debug.Log("Returning to main menu...");
-
-        // SỬA: Phát âm thanh và delay chuyển scene
-        PlayButtonSound();
-
-        // Chuyển về menu music
-        if (BackgroundMusicManager.Instance != null)
-        {
-            BackgroundMusicManager.Instance.PlayMenuMusic();
-        }
-
+        PlayButtonSound(); // THÊM: Phát âm thanh
         StartCoroutine(LoadSceneWithDelay(mainMenuSceneName, 0.2f));
     }
 
     void PlayButtonSound()
     {
-        // SỬA: Thêm debug để kiểm tra
-        Debug.Log($"Playing end game button sound. AudioSource: {audioSource != null}, Sound: {buttonClickSound != null}");
-
+        // THÊM: Phát âm thanh button click
         if (buttonClickSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(buttonClickSound, 1.0f);
-            Debug.Log("End game button sound played!");
-        }
-        else
-        {
-            if (buttonClickSound == null)
-                Debug.LogError("Button Click Sound is NULL! Please assign it in Inspector.");
-            if (audioSource == null)
-                Debug.LogError("AudioSource is NULL!");
         }
     }
 
-    // SỬA: Thêm coroutine để delay chuyển scene
+    // THÊM: Delay chuyển scene
     IEnumerator LoadSceneWithDelay(string sceneName, float delay)
     {
-        // Đợi âm thanh phát xong
         yield return new WaitForSeconds(delay);
-
-        Debug.Log($"Loading scene: {sceneName}");
         SceneManager.LoadScene(sceneName);
     }
 
@@ -169,9 +114,6 @@ public class EndGameCode : MonoBehaviour
             {
                 HighScoreText.text = $"NEW HIGH SCORE!\n{highScore:N0}";
                 HighScoreText.color = Color.yellow;
-
-                // SỬA: Thêm hiệu ứng nhấp nháy cho NEW HIGH SCORE
-                StartCoroutine(BlinkHighScoreText());
             }
             else
             {
@@ -181,19 +123,6 @@ public class EndGameCode : MonoBehaviour
         }
 
         Debug.Log($"End Game - Final Score: {finalScore}, High Score: {highScore}");
-    }
-
-    // SỬA: Hiệu ứng nhấp nháy cho NEW HIGH SCORE
-    IEnumerator BlinkHighScoreText()
-    {
-        for (int i = 0; i < 6; i++)
-        {
-            HighScoreText.color = Color.yellow;
-            yield return new WaitForSeconds(0.3f);
-            HighScoreText.color = Color.red;
-            yield return new WaitForSeconds(0.3f);
-        }
-        HighScoreText.color = Color.yellow; // Kết thúc bằng màu vàng
     }
 
     // Hàm để các script khác gọi khi game over
@@ -214,12 +143,5 @@ public class EndGameCode : MonoBehaviour
 
         // Chuyển đến End Scene
         SceneManager.LoadScene("EndScene");
-    }
-
-    // SỬA: Thêm hàm test
-    [ContextMenu("Test End Game Button Sound")]
-    void TestEndGameButtonSound()
-    {
-        PlayButtonSound();
     }
 }
