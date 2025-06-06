@@ -6,7 +6,7 @@ public class RotatingObstacle : MonoBehaviour
     public float rotationSpeed = 180.0f;
     public float destroyY = -10.0f;
     public int damageAmount = 25; // Damage gây ra cho player
-    public int maxHealth = 3; // Số lần bị bắn mới bể
+    public int maxHealth = 1; // Số lần bị bắn mới bể
     private int currentHealth;
 
     void Start()

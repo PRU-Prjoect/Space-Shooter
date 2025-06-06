@@ -14,9 +14,9 @@ public class ObstacleSpawner : MonoBehaviour
 
     [Header("Speed Increase System")]
     public float baseObstacleSpeed = 5f; // Tốc độ cơ bản của obstacles
-    public float speedIncreaseRate = 2f; // Tăng tốc độ theo thời gian
+    public float speedIncreaseRate = 0.5f; // Tăng tốc độ theo thời gian
     public float maxObstacleSpeed = 40f; // Tốc độ tối đa
-    public float speedIncreaseInterval = 2f; // Tăng tốc mỗi 10 giây
+    public float speedIncreaseInterval = 5f; // Tăng tốc mỗi 10 giây
 
     [Header("Background Integration")]
     public bool useBackgroundBounds = true; // Toggle để bật/tắt

@@ -8,7 +8,7 @@ public class ObstacleBehaviour : MonoBehaviour
 
     [Header("Combat Settings")]
     public int damageAmount = 20; // Damage gây ra cho player
-    public int maxHealth = 3; // Số lần bị bắn mới bể
+    public int maxHealth = 1; // Số lần bị bắn mới bể
     private int currentHealth;
 
     [Header("Effects")]

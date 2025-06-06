@@ -7,7 +7,7 @@ public class ZigzagObstacle : MonoBehaviour
     public float zigzagRange = 3.0f;
     public float destroyY = -10.0f;
     public int damageAmount = 30; // Damage gây ra cho player
-    public int maxHealth = 4; // Số lần bị bắn mới bể
+    public int maxHealth = 1; // Số lần bị bắn mới bể
     private int currentHealth;
 
     private float startX;
