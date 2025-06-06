@@ -708,11 +708,18 @@ MonoBehaviour:
   - {fileID: 6543446260019174325, guid: 55cc479bf3241544da25d18b6cda3167, type: 3}
   - {fileID: 4236361706077035648, guid: 1d93030526b34e7439bf4ada0220ef24, type: 3}
   - {fileID: 7912385573555215617, guid: ebdbd7016f101044da748833bd958571, type: 3}
+  - {fileID: 6543446260019174325, guid: 55cc479bf3241544da25d18b6cda3167, type: 3}
+  - {fileID: 4236361706077035648, guid: 1d93030526b34e7439bf4ada0220ef24, type: 3}
+  - {fileID: 7912385573555215617, guid: ebdbd7016f101044da748833bd958571, type: 3}
   spawnRate: 1.5
   spawnRangeX: 8
   spawnY: 10
   increaseDifficulty: 1
   difficultyIncreaseRate: 0.01
+  baseObstacleSpeed: 2
+  speedIncreaseRate: 0.5
+  maxObstacleSpeed: 40
+  speedIncreaseInterval: 10
   useBackgroundBounds: 1
   marginFromEdge: 1
 --- !u!4 &571548429
