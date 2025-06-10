@@ -3,51 +3,59 @@ using UnityEngine.UI;
 
 public class PlaneSelectionPopup : MonoBehaviour
 {
-    [SerializeField] private GameObject popupPanel;
-    [SerializeField] private Button optionButton;
-    [SerializeField] private Button closeButton;
-    [SerializeField] private Button[] planeButtons;
-    [SerializeField] private GameObject[] planeModels;
+    [Header("UI References")]
+    public Button previousButton;
+    public Button nextButton;
+    public Button closeButton;
+    public Transform planeDisplayArea;
+
+    [Header("Plane Settings")]
+    public GameObject[] planePrefabs;
+
+    private int selectedPlaneIndex = 0;
+    private GameObject currentPlaneDisplay;
 
     void Start()
     {
-        optionButton.onClick.AddListener(OpenPopup);
-        closeButton.onClick.AddListener(ClosePopup);
+        // Gán sự kiện cho các button
+        previousButton.onClick.AddListener(PreviousPlane);
+        nextButton.onClick.AddListener(NextPlane);
+        closeButton.onClick.AddListener(ClosePanel);
 
-        // Gắn sự kiện cho từng nút máy bay
-        for (int i = 0; i < planeButtons.Length; i++)
-        {
-            int index = i;
-            planeButtons[i].onClick.AddListener(() => SelectPlane(index));
-        }
-
-        popupPanel.SetActive(false);
+        // Hiển thị máy bay đầu tiên
+        ShowPlane(selectedPlaneIndex);
     }
 
-    void OpenPopup()
+    void ShowPlane(int index)
     {
-        popupPanel.SetActive(true);
-        Time.timeScale = 0f; // Tạm dừng game
+        // Xóa máy bay hiện tại
+        if (currentPlaneDisplay != null)
+            Destroy(currentPlaneDisplay);
+
+        // Hiển thị máy bay mới
+        currentPlaneDisplay = Instantiate(planePrefabs[index], planeDisplayArea.position, planeDisplayArea.rotation);
+        currentPlaneDisplay.transform.SetParent(planeDisplayArea);
+
+        // Lưu lựa chọn
+        PlayerPrefs.SetInt("SelectedPlane", selectedPlaneIndex);
     }
 
-    void ClosePopup()
+    public void NextPlane()
     {
-        popupPanel.SetActive(false);
-        Time.timeScale = 1f; // Tiếp tục game
+        selectedPlaneIndex = (selectedPlaneIndex + 1) % planePrefabs.Length;
+        ShowPlane(selectedPlaneIndex);
     }
 
-    void SelectPlane(int index)
+    public void PreviousPlane()
     {
-        // Ẩn tất cả máy bay
-        foreach (GameObject plane in planeModels)
-        {
-            plane.SetActive(false);
-        }
+        selectedPlaneIndex--;
+        if (selectedPlaneIndex < 0)
+            selectedPlaneIndex = planePrefabs.Length - 1;
+        ShowPlane(selectedPlaneIndex);
+    }
 
-        // Hiện máy bay được chọn
-        planeModels[index].SetActive(true);
-
-        ClosePopup();
-        Debug.Log($"Đã chọn máy bay {index}");
+    public void ClosePanel()
+    {
+        gameObject.SetActive(false);
     }
 }
