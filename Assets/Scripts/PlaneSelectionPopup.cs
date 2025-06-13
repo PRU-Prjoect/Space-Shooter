@@ -3,74 +3,105 @@ using UnityEngine.UI; // Bắt buộc phải có để làm việc với Image v
 
 public class PlaneSelectionPopup : MonoBehaviour
 {
+    // === CÁC BIẾN PUBLIC ĐỂ KÉO THẢ TRONG EDITOR (GIỮ NGUYÊN) ===
     public GameObject optionsPanel;
-    // Kéo các Sprite máy bay của bạn vào đây trong Inspector
-    public Sprite[] airplaneSprites;
-
-    // Kéo đối tượng Image dùng để hiển thị máy bay vào đây
+    public Sprite[] airplaneSprites; // Giữ nguyên cách kéo thả thủ công
     public Image airplaneDisplayImage;
-
-    // (Tùy chọn) Kéo đối tượng Text để hiển thị tên máy bay
     public Text airplaneNameText;
 
+    [Header("Audio")]
+    public AudioClip buttonClickSound;
+
+    // === CÁC BIẾN PRIVATE (GIỮ NGUYÊN) ===
+    private AudioSource audioSource;
     private int currentIndex = 0;
+
+    // THÊM MỚI: Sử dụng Awake() để khởi tạo các component cần thiết
+    void Awake()
+    {
+        // Lấy component AudioSource từ chính GameObject này (AirplaneManager)
+        audioSource = GetComponent<AudioSource>();
+        // Nếu không tìm thấy, tự động thêm vào để tránh lỗi NullReferenceException
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+    }
 
     void Start()
     {
-        // Đảm bảo rằng có ít nhất một sprite được gán
         if (airplaneSprites.Length > 0)
         {
             ShowAirplane(currentIndex);
         }
     }
 
-    // Hàm chính để cập nhật hình ảnh hiển thị
+    // Hàm này không thay đổi
     private void ShowAirplane(int index)
     {
-        // Gán sprite từ mảng vào component Image
         airplaneDisplayImage.sprite = airplaneSprites[index];
-
-        // (Tùy chọn) Cập nhật tên. Tên được lấy từ tên của file Sprite.
         if (airplaneNameText != null)
         {
             airplaneNameText.text = airplaneSprites[index].name;
         }
     }
 
-    // Hàm được gọi bởi nút Next
+    // Hàm này không thay đổi
+    private void PlaySound()
+    {
+        if (buttonClickSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(buttonClickSound);
+        }
+    }
+
     public void NextAirplane()
     {
+        PlaySound(); // THÊM MỚI: Gọi hàm phát âm thanh
         currentIndex++;
         if (currentIndex >= airplaneSprites.Length)
         {
-            currentIndex = 0; // Quay về đầu danh sách
+            currentIndex = 0;
         }
         ShowAirplane(currentIndex);
     }
 
-    // Hàm được gọi bởi nút Previous
     public void PreviousAirplane()
     {
+        PlaySound(); // THÊM MỚI: Gọi hàm phát âm thanh
         currentIndex--;
         if (currentIndex < 0)
         {
-            currentIndex = airplaneSprites.Length - 1; // Đi đến cuối danh sách
+            currentIndex = airplaneSprites.Length - 1;
         }
         ShowAirplane(currentIndex);
     }
 
-    // Hàm được gọi bởi nút Select
-    // Tìm hàm SelectAirplane() và thay thế nội dung của nó bằng đoạn code này
+    // Hàm SelectAirplane của bạn đã đúng, chỉ cần thêm gọi hàm âm thanh
     public void SelectAirplane()
     {
-        // 1. Lưu lựa chọn của người chơi
-        // PlayerPrefs là một hệ thống lưu trữ dữ liệu đơn giản, hoạt động như một cặp key-value.
-        // Đây là một dạng quản lý dữ liệu cơ bản trong Unity[3].
-        PlayerPrefs.SetInt("SelectedAirplaneIndex", currentIndex);
-        PlayerPrefs.Save(); // Luôn gọi Save() để đảm bảo dữ liệu được ghi vào ổ đĩa
+        PlaySound(); // THÊM MỚI: Gọi hàm phát âm thanh
 
-        Debug.Log("Đã chọn máy bay có index: " + currentIndex + " và đã lưu lại.");        
-        optionsPanel.SetActive(false); // Ra lệnh cho panel tự ẩn đi
+        // Lưu lựa chọn của người chơi
+        PlayerPrefs.SetInt("SelectedAirplaneIndex", currentIndex);
+        PlayerPrefs.Save();
+
+        Debug.Log("Đã chọn máy bay có index: " + currentIndex + " và đã lưu lại.");
+
+        // Kiểm tra để chắc chắn rằng optionsPanel đã được gán trước khi sử dụng
+        if (optionsPanel != null)
+        {
+            optionsPanel.SetActive(false); // Đóng panel
+        }
     }
 
+    // THÊM MỚI: Tạo một hàm riêng cho nút Close để nó cũng có thể phát âm thanh
+    public void ClosePanel()
+    {
+        PlaySound();
+        if (optionsPanel != null)
+        {
+            optionsPanel.SetActive(false);
+        }
+    }
 }
