@@ -1,61 +1,76 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI; // Bắt buộc phải có để làm việc với Image và Text
 
 public class PlaneSelectionPopup : MonoBehaviour
 {
-    [Header("UI References")]
-    public Button previousButton;
-    public Button nextButton;
-    public Button closeButton;
-    public Transform planeDisplayArea;
+    public GameObject optionsPanel;
+    // Kéo các Sprite máy bay của bạn vào đây trong Inspector
+    public Sprite[] airplaneSprites;
 
-    [Header("Plane Settings")]
-    public GameObject[] planePrefabs;
+    // Kéo đối tượng Image dùng để hiển thị máy bay vào đây
+    public Image airplaneDisplayImage;
 
-    private int selectedPlaneIndex = 0;
-    private GameObject currentPlaneDisplay;
+    // (Tùy chọn) Kéo đối tượng Text để hiển thị tên máy bay
+    public Text airplaneNameText;
+
+    private int currentIndex = 0;
 
     void Start()
     {
-        // Gán sự kiện cho các button
-        previousButton.onClick.AddListener(PreviousPlane);
-        nextButton.onClick.AddListener(NextPlane);
-        closeButton.onClick.AddListener(ClosePanel);
-
-        // Hiển thị máy bay đầu tiên
-        ShowPlane(selectedPlaneIndex);
+        // Đảm bảo rằng có ít nhất một sprite được gán
+        if (airplaneSprites.Length > 0)
+        {
+            ShowAirplane(currentIndex);
+        }
     }
 
-    void ShowPlane(int index)
+    // Hàm chính để cập nhật hình ảnh hiển thị
+    private void ShowAirplane(int index)
     {
-        // Xóa máy bay hiện tại
-        if (currentPlaneDisplay != null)
-            Destroy(currentPlaneDisplay);
+        // Gán sprite từ mảng vào component Image
+        airplaneDisplayImage.sprite = airplaneSprites[index];
 
-        // Hiển thị máy bay mới
-        currentPlaneDisplay = Instantiate(planePrefabs[index], planeDisplayArea.position, planeDisplayArea.rotation);
-        currentPlaneDisplay.transform.SetParent(planeDisplayArea);
-
-        // Lưu lựa chọn
-        PlayerPrefs.SetInt("SelectedPlane", selectedPlaneIndex);
+        // (Tùy chọn) Cập nhật tên. Tên được lấy từ tên của file Sprite.
+        if (airplaneNameText != null)
+        {
+            airplaneNameText.text = airplaneSprites[index].name;
+        }
     }
 
-    public void NextPlane()
+    // Hàm được gọi bởi nút Next
+    public void NextAirplane()
     {
-        selectedPlaneIndex = (selectedPlaneIndex + 1) % planePrefabs.Length;
-        ShowPlane(selectedPlaneIndex);
+        currentIndex++;
+        if (currentIndex >= airplaneSprites.Length)
+        {
+            currentIndex = 0; // Quay về đầu danh sách
+        }
+        ShowAirplane(currentIndex);
     }
 
-    public void PreviousPlane()
+    // Hàm được gọi bởi nút Previous
+    public void PreviousAirplane()
     {
-        selectedPlaneIndex--;
-        if (selectedPlaneIndex < 0)
-            selectedPlaneIndex = planePrefabs.Length - 1;
-        ShowPlane(selectedPlaneIndex);
+        currentIndex--;
+        if (currentIndex < 0)
+        {
+            currentIndex = airplaneSprites.Length - 1; // Đi đến cuối danh sách
+        }
+        ShowAirplane(currentIndex);
     }
 
-    public void ClosePanel()
+    // Hàm được gọi bởi nút Select
+    // Tìm hàm SelectAirplane() và thay thế nội dung của nó bằng đoạn code này
+    public void SelectAirplane()
     {
-        gameObject.SetActive(false);
+        // 1. Lưu lựa chọn của người chơi
+        // PlayerPrefs là một hệ thống lưu trữ dữ liệu đơn giản, hoạt động như một cặp key-value.
+        // Đây là một dạng quản lý dữ liệu cơ bản trong Unity[3].
+        PlayerPrefs.SetInt("SelectedAirplaneIndex", currentIndex);
+        PlayerPrefs.Save(); // Luôn gọi Save() để đảm bảo dữ liệu được ghi vào ổ đĩa
+
+        Debug.Log("Đã chọn máy bay có index: " + currentIndex + " và đã lưu lại.");        
+        optionsPanel.SetActive(false); // Ra lệnh cho panel tự ẩn đi
     }
+
 }
