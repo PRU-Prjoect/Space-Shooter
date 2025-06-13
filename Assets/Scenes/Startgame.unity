@@ -703,7 +703,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 326672939}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 667466462}
+        m_TargetAssemblyTypeName: PlaneSelectionPopup, Assembly-CSharp
+        m_MethodName: NextAirplane
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &326672939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -742,6 +754,82 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 326672936}
+  m_CullTransparentMesh: 1
+--- !u!1 &335109856
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 335109857}
+  - component: {fileID: 335109859}
+  - component: {fileID: 335109858}
+  m_Layer: 5
+  m_Name: Plane
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &335109857
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335109856}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1876626219}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 41.808}
+  m_SizeDelta: {x: 215.7427, y: 196.7685}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &335109858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335109856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: -6487660755406618664, guid: 3a8474dd2229b9343b9de71faeaa6402,
+    type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &335109859
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335109856}
   m_CullTransparentMesh: 1
 --- !u!1 &362278326
 GameObject:
@@ -1114,7 +1202,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 455064297}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 667466462}
+        m_TargetAssemblyTypeName: PlaneSelectionPopup, Assembly-CSharp
+        m_MethodName: PreviousAirplane
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &455064297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1518,14 +1618,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc9033ba4c3673d4a82272491b2cf8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previousButton: {fileID: 455064296}
-  nextButton: {fileID: 326672938}
-  closeButton: {fileID: 1044783985}
-  planeDisplayArea: {fileID: 1502807691}
-  planePrefabs:
-  - {fileID: 8391752330182758513, guid: f60aae55a212fa6499565165b415804e, type: 3}
-  - {fileID: 4409697036761531310, guid: 27b758f6c9ec1cd478986b11e6ec578e, type: 3}
-  - {fileID: 3735041548305878546, guid: 89702f3589028d149b205ebb80f2a3d4, type: 3}
+  optionsPanel: {fileID: 1876626218}
+  airplaneSprites:
+  - {fileID: -6487660755406618664, guid: 3a8474dd2229b9343b9de71faeaa6402, type: 3}
+  - {fileID: -6988965644803428808, guid: 733ee35cdaac3ef42b53d99ee539825a, type: 3}
+  - {fileID: 1985439386581923388, guid: 5dd3c92069df6df4da662b8545cf0b08, type: 3}
+  - {fileID: 21300000, guid: f6d9e7337b90b9e4ba6d44379335a759, type: 3}
+  airplaneDisplayImage: {fileID: 335109858}
+  airplaneNameText: {fileID: 0}
+  buttonClickSound: {fileID: 8300000, guid: eb29844b03df258489a10c01c6e51552, type: 3}
 --- !u!224 &667466463
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2135,7 +2236,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1044783986}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 667466462}
+        m_TargetAssemblyTypeName: PlaneSelectionPopup, Assembly-CSharp
+        m_MethodName: ClosePanel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1044783986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2416,41 +2529,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionsPanel: {fileID: 1876626218}
---- !u!1 &1502807690
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1502807691}
-  m_Layer: 5
-  m_Name: Plane
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1502807691
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1502807690}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1876626219}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.491, y: 26.513203}
-  m_SizeDelta: {x: 207.0349, y: 235.5121}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1513965587
 GameObject:
   m_ObjectHideFlags: 0
@@ -2533,7 +2611,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513965590}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 667466462}
+        m_TargetAssemblyTypeName: PlaneSelectionPopup, Assembly-CSharp
+        m_MethodName: SelectAirplane
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1513965590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3092,7 +3182,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1876626219
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3105,13 +3195,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1502807691}
   - {fileID: 89039776}
   - {fileID: 1695113643}
   - {fileID: 1044783984}
   - {fileID: 326672937}
   - {fileID: 455064295}
   - {fileID: 1513965588}
+  - {fileID: 335109857}
   m_Father: {fileID: 461341543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3126,7 +3216,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1876626218}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -3169,14 +3259,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc9033ba4c3673d4a82272491b2cf8c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previousButton: {fileID: 455064296}
-  nextButton: {fileID: 326672938}
-  closeButton: {fileID: 1044783985}
-  planeDisplayArea: {fileID: 1502807691}
-  planePrefabs:
-  - {fileID: 8391752330182758513, guid: f60aae55a212fa6499565165b415804e, type: 3}
-  - {fileID: 4409697036761531310, guid: 27b758f6c9ec1cd478986b11e6ec578e, type: 3}
-  - {fileID: 3735041548305878546, guid: 89702f3589028d149b205ebb80f2a3d4, type: 3}
+  optionsPanel: {fileID: 0}
+  airplaneSprites: []
+  airplaneDisplayImage: {fileID: 0}
+  airplaneNameText: {fileID: 0}
+  buttonClickSound: {fileID: 0}
 --- !u!1 &1913920524
 GameObject:
   m_ObjectHideFlags: 0

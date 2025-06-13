@@ -5,105 +5,143 @@ using System.Collections;
 
 public class InstructionManager : MonoBehaviour
 {
-    [Header("UI References")]
-    public Button backButton;
+    [Header("UI Elements")]
+    public Text instructionText;
+    public RectTransform upArrow;
+    public RectTransform downArrow;
+    public RectTransform leftArrow;
+    public RectTransform rightArrow;
 
-    [Header("Scene Settings")]
-    public string mainMenuSceneName = "Startgame";
+    [Header("Animation Prefabs")]
+    public GameObject planePrefab;
+    public GameObject asteroidPrefab;
+    public GameObject bulletPrefab;
+    public GameObject explosionPrefab;
+    public GameObject starPrefab;
+
+    [Header("Animation Positions")]
+    public Transform stageCenter;
+    public Transform asteroidSpawnPoint;
+
+    [Header("Animation Settings")]
+    public float moveDistance = 2f;
+    public float animationSpeed = 2f;
+
+    [Header("Timing")]
+    public float instructionDelay = 3f;
+    public float loopDelay = 2f;
+
+    [Header("Key Bounce Settings")]
+    public float bounceScale = 1.25f;
+    public float bounceDuration = 0.1f;
 
     [Header("Audio")]
-    public AudioSource audioSource;
-    public AudioClip buttonClickSound;
+    public AudioClip keyPressSound;
+    public AudioClip collectSound; // ÂM THANH MỚI CHO VIỆC THU THẬP
+
+    private AudioSource audioSource;
+    private Vector3 initialScale = Vector3.one;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) { audioSource = gameObject.AddComponent<AudioSource>(); }
+    }
 
     void Start()
     {
-        SetupAudio(); // SỬA: Setup audio trước
-        SetupButton();
+        StartCoroutine(FullInstructionSequence());
     }
 
-    void SetupAudio()
+    void Update()
     {
-        // SỬA: Tự động tạo AudioSource nếu chưa có
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-            if (audioSource == null)
-            {
-                audioSource = gameObject.AddComponent<AudioSource>();
-            }
-        }
-
-        // SỬA: Cấu hình AudioSource đúng
-        audioSource.playOnAwake = false;
-        audioSource.volume = 1.0f;
-        audioSource.mute = false;
-
-        Debug.Log("Instruction Manager AudioSource setup completed");
+        if (Input.GetKeyDown(KeyCode.UpArrow)) { StartCoroutine(BounceKey(upArrow)); }
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) { StartCoroutine(BounceKey(downArrow)); }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow)) { StartCoroutine(BounceKey(leftArrow)); }
+        else if (Input.GetKeyDown(KeyCode.RightArrow)) { StartCoroutine(BounceKey(rightArrow)); }
     }
 
-    void SetupButton()
+    private IEnumerator FullInstructionSequence()
     {
-        if (backButton != null)
+        while (true)
         {
-            backButton.onClick.AddListener(GoBackToMainMenu);
-            Debug.Log("Back button connected successfully!");
-        }
-        else
-        {
-            Debug.LogError("Back Button not assigned!");
-        }
-    }
+            // Giai đoạn 1 (Không đổi)
+            instructionText.text = "Dùng các phím mũi tên để di chuyển...";
+            GameObject plane = Instantiate(planePrefab, stageCenter.position, Quaternion.identity);
+            yield return new WaitForSeconds(1f);
+            yield return MoveObject(plane.transform, plane.transform.position + Vector3.left * moveDistance);
+            yield return MoveObject(plane.transform, stageCenter.position);
+            yield return new WaitForSeconds(instructionDelay);
 
-    public void GoBackToMainMenu()
-    {
-        Debug.Log("Returning to main menu from instructions...");
+            // Giai đoạn 2 (Đã được cập nhật)
+            instructionText.text = "Bắn thiên thạch để nhận sao...";
+            GameObject asteroid = Instantiate(asteroidPrefab, asteroidSpawnPoint.position, Quaternion.identity);
+            yield return MoveObject(asteroid.transform, stageCenter.position + Vector3.up * 1.5f);
 
-        // SỬA: Phát âm thanh và delay chuyển scene
-        PlayButtonSound();
+            GameObject bullet = Instantiate(bulletPrefab, plane.transform.position, Quaternion.identity);
+            yield return MoveObject(bullet.transform, asteroid.transform.position);
 
-        // Delay để âm thanh kịp phát
-        StartCoroutine(LoadSceneWithDelay(mainMenuSceneName, 0.2f));
-    }
+            Instantiate(explosionPrefab, asteroid.transform.position, Quaternion.identity);
+            GameObject star = Instantiate(starPrefab, asteroid.transform.position, Quaternion.identity);
 
-    void PlayButtonSound()
-    {
-        // SỬA: Thêm debug để kiểm tra
-        Debug.Log($"Playing back button sound. AudioSource: {audioSource != null}, Sound: {buttonClickSound != null}");
+            Destroy(asteroid);
+            Destroy(bullet);
 
-        if (buttonClickSound != null && audioSource != null)
-        {
-            audioSource.PlayOneShot(buttonClickSound, 1.0f);
-            Debug.Log("Back button sound played!");
-        }
-        else
-        {
-            if (buttonClickSound == null)
-                Debug.LogError("Button Click Sound is NULL! Please assign it in Inspector.");
-            if (audioSource == null)
-                Debug.LogError("AudioSource is NULL!");
+            // === PHẦN LOGIC ĐÃ ĐƯỢC SỬA ĐỔI ===
+            // 1. Chờ một chút để người chơi thấy ngôi sao
+            yield return new WaitForSeconds(0.5f);
+
+            // 2. CHO MÁY BAY TỰ BAY ĐẾN VỊ TRÍ CỦA NGÔI SAO
+            yield return MoveObject(plane.transform, star.transform.position);
+
+            // 3. Phát âm thanh thu thập và hủy ngôi sao đi
+            if (collectSound != null) { audioSource.PlayOneShot(collectSound); }
+            Destroy(star);
+            // === KẾT THÚC PHẦN SỬA ĐỔI ===
+
+            Destroy(plane);
+            yield return new WaitForSeconds(loopDelay);
+            instructionText.text = "";
         }
     }
 
-    // SỬA: Thêm coroutine để delay chuyển scene
-    IEnumerator LoadSceneWithDelay(string sceneName, float delay)
+    private IEnumerator MoveObject(Transform objectToMove, Vector3 targetPosition)
     {
-        // Chuyển về menu music nếu có BackgroundMusicManager
-        if (BackgroundMusicManager.Instance != null)
+        float timer = 0;
+        Vector3 startPosition = objectToMove.position;
+        float duration = Vector3.Distance(startPosition, targetPosition) / animationSpeed;
+        while (timer < duration)
         {
-            BackgroundMusicManager.Instance.PlayMenuMusic();
+            if (objectToMove == null) yield break;
+            objectToMove.position = Vector3.Lerp(startPosition, targetPosition, timer / duration);
+            timer += Time.deltaTime;
+            yield return null;
         }
-
-        // Đợi âm thanh phát xong
-        yield return new WaitForSeconds(delay);
-
-        Debug.Log($"Loading scene: {sceneName}");
-        SceneManager.LoadScene(sceneName);
+        if (objectToMove != null) objectToMove.position = targetPosition;
     }
 
-    // SỬA: Thêm hàm test
-    [ContextMenu("Test Back Button Sound")]
-    void TestBackButtonSound()
+    private IEnumerator BounceKey(RectTransform keyTransform)
     {
-        PlayButtonSound();
+        if (keyPressSound != null) { audioSource.PlayOneShot(keyPressSound); }
+        Vector3 targetScale = new Vector3(bounceScale, bounceScale, 1f);
+        float timer = 0;
+        while (timer < bounceDuration)
+        {
+            keyTransform.localScale = Vector3.Lerp(initialScale, targetScale, timer / bounceDuration);
+            timer += Time.deltaTime; yield return null;
+        }
+        keyTransform.localScale = targetScale;
+        timer = 0;
+        while (timer < bounceDuration)
+        {
+            keyTransform.localScale = Vector3.Lerp(targetScale, initialScale, timer / bounceDuration);
+            timer += Time.deltaTime; yield return null;
+        }
+        keyTransform.localScale = initialScale;
+    }
+
+    public void GoToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 }
